@@ -1,0 +1,16 @@
+name: bit_array
+description: >
+  A bit array (also known as BitMap, BitSet, BitString, or BitVector)
+  is an array data structure that compactly stores bits.
+version: 1.0.0
+homepage: https://github.com/isoos/bit_array
+author: Istvan Soos <istvan.soos@gmail.com>
+
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+
+#dependencies:
+#
+
+dev_dependencies:
+  test: ^1.0.0
