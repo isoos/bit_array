@@ -1,4 +1,4 @@
-part of bit_array;
+import 'package:bit_array/bit_array.dart';
 
 /// A range-encoded bit counter.
 class BitCounter {
@@ -59,13 +59,14 @@ class BitCounter {
 
   /// Adds a bit [array] to the counter.
   void addBitArray(BitArray array) {
+    final arrayData = array.asUint64List;
     if (_length < array.length) {
       _length = array.length;
       _bits.forEach((a) => a.length = _length);
     }
-    final arrayDataLength = array._data.length;
+    final arrayDataLength = arrayData.length;
     for (int i = 0; i < arrayDataLength; i++) {
-      int overflow = array._data[i];
+      int overflow = arrayData[i];
 
       for (int pos = 0; overflow != 0; pos++) {
         BitArray counter;
@@ -75,9 +76,10 @@ class BitCounter {
         } else {
           counter = _bits[pos];
         }
-        final value = counter._data[i];
+        final counterData = counter.asUint64List;
+        final value = counterData[i];
         final newOverflow = value & overflow;
-        counter._data[i] = (value | overflow) & (~newOverflow);
+        counterData[i] = (value | overflow) & (~newOverflow);
         overflow = newOverflow;
       }
     }
