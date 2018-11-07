@@ -65,5 +65,24 @@ void main() {
         expect(counter[i], i);
       }
     });
+
+    test('bit sets', () {
+      final counter = new BitCounter(0);
+      counter.addBitSet(new ListSet.fromSorted([0, 2, 5, 2000]));
+      expect(counter[2000], 1);
+      counter.addBitSet(new ListSet.fromSorted([2, 2000]));
+      counter.addBitSet(new RangeSet.fromSortedRangeLength([0, 2, 1999, 1]));
+      expect(counter[0], 2);
+      expect(counter[1], 1);
+      expect(counter[2], 3);
+      expect(counter[3], 0);
+      expect(counter[4], 0);
+      expect(counter[5], 1);
+      expect(counter[6], 0);
+      expect(counter[1998], 0);
+      expect(counter[1999], 1);
+      expect(counter[2000], 3);
+      expect(counter[2001], 0);
+    });
   });
 }

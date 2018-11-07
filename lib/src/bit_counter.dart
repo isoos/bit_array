@@ -59,12 +59,17 @@ class BitCounter {
 
   /// Adds a bit [array] to the counter.
   void addBitArray(BitArray array) {
-    if (_length < array.length) {
-      _length = array.length;
+    addBitSet(array);
+  }
+
+  /// Adds a [set] to the counter.
+  void addBitSet(BitSet set) {
+    if (_length < set.length) {
+      _length = set.length;
       _bits.forEach((a) => a.length = _length);
     }
-    final arrayDataLength = _length >> 6;
-    final iterator = array.asUint64Iterable().iterator;
+    final arrayDataLength = _bufferLength64(_length);
+    final iterator = set.asUint64Iterable().iterator;
     for (int i = 0; i < arrayDataLength && iterator.moveNext(); i++) {
       int overflow = iterator.current;
 

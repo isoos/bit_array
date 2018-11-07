@@ -1,7 +1,7 @@
 part of bit_array;
 
 /// Bit array to store bits.
-class BitArray {
+class BitArray implements BitSet {
   Uint64List _data;
   int _length;
 
@@ -19,7 +19,17 @@ class BitArray {
     return new BitArray._(data);
   }
 
+  /// Creates a bit array using a generic bit set.
+  factory BitArray.fromBitSet(BitSet set, {int length}) {
+    length ??= set.length;
+    final setDataLength = _bufferLength64(set.length);
+    final data = new Uint64List(_bufferLength64(length));
+    data.setRange(0, setDataLength, set.asUint64Iterable());
+    return new BitArray._(data);
+  }
+
   /// The value of the bit with the specified [index].
+  @override
   bool operator [](int index) {
     return (_data[index >> 6] & _bitMask[index & 0x3f]) != 0;
   }
@@ -50,6 +60,7 @@ class BitArray {
   }
 
   /// The number of bits set to true.
+  @override
   int get cardinality => _data.buffer
       .asUint8List()
       .fold(0, (sum, value) => sum + _cardinalityBitCounts[value]);
@@ -106,49 +117,51 @@ class BitArray {
   }
 
   /// Update the current [BitArray] using a logical AND operation with the
-  /// corresponding elements in the specified [array].
-  /// Excess size of the [array] is ignored.
-  void and(BitArray array) {
-    final minLength = math.min(_data.length, array._data.length);
-    for (int i = 0; i < minLength; i++) {
-      _data[i] &= array._data[i];
+  /// corresponding elements in the specified [set].
+  /// Excess size of the [set] is ignored.
+  void and(BitSet set) {
+    final iter = set.asUint64Iterable().iterator;
+    int i = 0;
+    for (; i < _data.length && iter.moveNext(); i++) {
+      _data[i] &= iter.current;
     }
-    for (int i = minLength; i < _data.length; i++) {
+    for (; i < _data.length; i++) {
       _data[i] = 0;
     }
   }
 
   /// Update the current [BitArray] using a logical AND NOT operation with the
-  /// corresponding elements in the specified [array].
-  /// Excess size of the [array] is ignored.
-  void andNot(BitArray array) {
-    final minLength = math.min(_data.length, array._data.length);
-    for (int i = 0; i < minLength; i++) {
-      _data[i] &= ~array._data[i];
+  /// corresponding elements in the specified [set].
+  /// Excess size of the [set] is ignored.
+  void andNot(BitSet set) {
+    final iter = set.asUint64Iterable().iterator;
+    for (int i = 0; i < _data.length && iter.moveNext(); i++) {
+      _data[i] &= ~iter.current;
     }
   }
 
   /// Update the current [BitArray] using a logical OR operation with the
-  /// corresponding elements in the specified [array].
-  /// Excess size of the [array] is ignored.
-  void or(BitArray array) {
-    final minLength = math.min(_data.length, array._data.length);
-    for (int i = 0; i < minLength; i++) {
-      _data[i] |= array._data[i];
+  /// corresponding elements in the specified [set].
+  /// Excess size of the [set] is ignored.
+  void or(BitSet set) {
+    final iter = set.asUint64Iterable().iterator;
+    for (int i = 0; i < _data.length && iter.moveNext(); i++) {
+      _data[i] |= iter.current;
     }
   }
 
   /// Update the current [BitArray] using a logical XOR operation with the
-  /// corresponding elements in the specified [array].
-  /// Excess size of the [array] is ignored.
-  void xor(BitArray array) {
-    final minLength = math.min(_data.length, array._data.length);
-    for (int i = 0; i < minLength; i++) {
-      _data[i] = _data[i] ^ array._data[i];
+  /// corresponding elements in the specified [set].
+  /// Excess size of the [set] is ignored.
+  void xor(BitSet set) {
+    final iter = set.asUint64Iterable().iterator;
+    for (int i = 0; i < _data.length && iter.moveNext(); i++) {
+      _data[i] = _data[i] ^ iter.current;
     }
   }
 
   /// Creates a copy of the current [BitArray].
+  @override
   BitArray clone() {
     final newData = new Uint64List(_data.length);
     newData.setRange(0, _data.length, _data);
@@ -156,20 +169,24 @@ class BitArray {
   }
 
   /// Creates a new [BitArray] using a logical AND operation with the
-  /// corresponding elements in the specified [array].
-  BitArray operator &(BitArray array) => clone()..and(array);
+  /// corresponding elements in the specified [set].
+  /// Excess size of the [set] is ignored.
+  BitArray operator &(BitSet set) => clone()..and(set);
 
   /// Creates a new [BitArray] using a logical AND NOT operation with the
-  /// corresponding elements in the specified [array].
-  BitArray operator %(BitArray array) => clone()..andNot(array);
+  /// corresponding elements in the specified [set].
+  /// Excess size of the [set] is ignored.
+  BitArray operator %(BitSet set) => clone()..andNot(set);
 
   /// Creates a new [BitArray] using a logical OR operation with the
-  /// corresponding elements in the specified [array].
-  BitArray operator |(BitArray array) => clone()..or(array);
+  /// corresponding elements in the specified [set].
+  /// Excess size of the [set] is ignored.
+  BitArray operator |(BitSet set) => clone()..or(set);
 
   /// Creates a new [BitArray] using a logical XOR operation with the
-  /// corresponding elements in the specified [array].
-  BitArray operator ^(BitArray array) => clone()..xor(array);
+  /// corresponding elements in the specified [set].
+  /// Excess size of the [set] is ignored.
+  BitArray operator ^(BitSet set) => clone()..xor(set);
 
   /// Creates a string of 0s and 1s of the content of the array.
   String toBinaryString() {
@@ -186,10 +203,12 @@ class BitArray {
 
   /// Returns an iterable wrapper of the bit array that iterates over the index
   /// numbers and returns the 64-bit int blocks.
+  @override
   Iterable<int> asUint64Iterable() => _data;
 
   /// Returns an iterable wrapper of the bit array that iterates over the index
   /// numbers that match [value] (by default the bits that are set).
+  @override
   Iterable<int> asIntIterable([bool value = true]) {
     return new _IntIterable(this, value);
   }
