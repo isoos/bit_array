@@ -1,6 +1,4 @@
-import 'dart:collection';
-import 'dart:math' as math;
-import 'dart:typed_data';
+part of bit_array;
 
 /// Bit array to store bits.
 class BitArray {
@@ -186,9 +184,9 @@ class BitArray {
   /// Use with caution.
   ByteBuffer get byteBuffer => _data.buffer;
 
-  /// The backing, mutable 64-bit int list of the [BitArray].
-  /// Use with caution.
-  Uint64List get asUint64List => _data;
+  /// Returns an iterable wrapper of the bit array that iterates over the index
+  /// numbers and returns the 64-bit int blocks.
+  Iterable<int> asUint64Iterable() => _data;
 
   /// Returns an iterable wrapper of the bit array that iterates over the index
   /// numbers that match [value] (by default the bits that are set).
