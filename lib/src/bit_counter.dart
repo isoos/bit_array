@@ -7,6 +7,11 @@ class BitCounter {
 
   BitCounter(this._length);
 
+  /// The list of bits from LSB to MSB.
+  ///
+  /// Exposed only for serialization, do NOT call or modify them directly.
+  List<BitArray> get bits => _bits;
+
   /// The maximum number of bits required to store the value of the counter.
   int get bitLength => _bits.length;
 

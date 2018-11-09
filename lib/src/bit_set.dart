@@ -58,6 +58,11 @@ class ListSet implements BitSet {
 
   ListSet.fromSorted(this._list);
 
+  /// The list of values, in a sorted order.
+  ///
+  /// Exposed only for serialization, do NOT call or modify them directly.
+  List<int> get values => _list;
+
   @override
   bool operator [](int index) {
     int left = 0;
@@ -101,6 +106,11 @@ class RangeSet implements BitSet {
   final List<int> _list;
 
   RangeSet.fromSortedRangeLength(this._list);
+
+  /// The list of range+length encoded ranges, in a sorted order.
+  ///
+  /// Exposed only for serialization, do NOT call or modify them directly.
+  List<int> get rangeLengthValues => _list;
 
   @override
   bool operator [](int index) {
