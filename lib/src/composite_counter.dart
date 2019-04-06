@@ -26,7 +26,7 @@ class CompositeCounter {
   final int _indexMask;
   final int _offsetMask;
 
-  CompositeCounter({this.chunkBits: 16, List<BitCounterChunk> chunks})
+  CompositeCounter({this.chunkBits = 16, List<BitCounterChunk> chunks})
       : _chunkLength = (1 << chunkBits),
         _indexMask = (1 << chunkBits) - 1,
         _offsetMask = ~((1 << chunkBits) - 1),
@@ -57,21 +57,95 @@ class CompositeCounter {
   }
 
   /// Increments the current counter the given composite set.
-  void addCompositeSet(CompositeSet set) {
+  ///
+  /// The add starts at the bit position specified by [shiftLeft].
+  void addCompositeSet(CompositeSet set, {int shiftLeft = 0}) {
     if (set.chunkBits != chunkBits) {
-      throw new StateError('Only sets with the same chunkBits can be added');
+      throw StateError('Only sets with the same chunkBits can be added');
     }
     for (BitSetChunk bsc in set.chunks) {
       final c = _getChunk(bsc.offset, true);
-      c.bitCounter.addBitSet(bsc.bitSet);
+      c.bitCounter.addBitSet(bsc.bitSet, shiftLeft: shiftLeft);
     }
   }
 
+  /// Adds a [counter] to the set.
+  ///
+  /// The add starts at the bit position specified by [shiftLeft].
+  void addCompositeCounter(CompositeCounter counter, {int shiftLeft = 0}) {
+    if (counter.chunkBits != chunkBits) {
+      throw StateError('Only counters with the same chunkBits can be added');
+    }
+    for (BitCounterChunk bcc in counter.chunks) {
+      final c = _getChunk(bcc.offset, true);
+      c.bitCounter.addBitCounter(bcc.bitCounter, shiftLeft: shiftLeft);
+    }
+  }
+
+  /// Multiply this instance with [value] and return the result.
+  CompositeCounter multiply(int value) {
+    return CompositeCounter(
+      chunkBits: chunkBits,
+      chunks: chunks
+          .map((c) => BitCounterChunk(c.offset, c.bitCounter.multiply(value)))
+          .toList(),
+    );
+  }
+
+  /// Multiply this instance with [counter] and return the result.
+  CompositeCounter multiplyWithCounter(CompositeCounter counter) {
+    if (counter.chunkBits != chunkBits) {
+      throw StateError(
+          'Only counters with the same chunkBits can be multiplied');
+    }
+    final result = CompositeCounter(chunkBits: counter.chunkBits);
+    for (BitCounterChunk bcc in counter.chunks) {
+      final c = _getChunk(bcc.offset);
+      if (c == null) continue;
+      final m = c.bitCounter.multiplyWithCounter(bcc.bitCounter);
+      if (m.bitLength == 0) continue;
+      if (m.bitLength == 1 && m._bits[0].cardinality == 0) continue;
+      result.chunks.add(BitCounterChunk(bcc.offset, m));
+    }
+    return result;
+  }
+
   /// Increments the value at the [index].
-  void increment(int index) {
+  ///
+  /// The increment starts at the bit position specified by [shiftLeft].
+  void increment(int index, {int shiftLeft = 0}) {
     final chunkOffset = index & _offsetMask;
     final c = _getChunk(chunkOffset, true);
-    c.bitCounter.increment(index & _indexMask);
+    c.bitCounter.increment(index & _indexMask, shiftLeft: shiftLeft);
+  }
+
+  /// Add [bits] cleared bits to the lower binary digits.
+  void shiftLeft(int bits) {
+    if (bits <= 0) return;
+    chunks.forEach((c) {
+      c.bitCounter.shiftLeft(bits);
+    });
+  }
+
+  /// Remove [bits] lower binary digits.
+  void shiftRight(int bits) {
+    if (bits <= 0) return;
+    chunks.forEach((c) {
+      c.bitCounter.shiftRight(bits);
+    });
+  }
+
+  /// Creates a copy of the current [CompositeCounter].
+  ///
+  /// The cloned instance starts at the bit position specified by [shiftRight].
+  CompositeCounter clone({int shiftRight = 0}) {
+    return CompositeCounter(
+      chunkBits: chunkBits,
+      chunks: chunks
+          .map((c) => BitCounterChunk(
+              c.offset, c.bitCounter.clone(shiftRight: shiftRight)))
+          .toList(),
+    );
   }
 
   BitCounterChunk _getChunk(int offset, [bool forInsert = false]) {
@@ -89,7 +163,7 @@ class CompositeCounter {
       }
     }
     if (forInsert) {
-      final c = new BitCounterChunk(offset, new BitCounter(_chunkLength));
+      final c = BitCounterChunk(offset, BitCounter(_chunkLength));
       if (left == chunks.length) {
         chunks.add(c);
       } else {

@@ -4,7 +4,7 @@ import 'package:bit_array/bit_array.dart';
 
 void main() {
   group('ListSet', () {
-    final set = new ListSet.fromSorted([23, 45, 78, 98, 101, 102, 103]);
+    final set = ListSet.fromSorted([23, 45, 78, 98, 101, 102, 103]);
 
     test('simple values', () {
       expect(set.length, 103);
@@ -42,24 +42,23 @@ void main() {
     });
 
     test('values around 200', () {
-      expect(new ListSet.fromSorted([199]).asUint64Iterable().toList(),
+      expect(ListSet.fromSorted([199]).asUint64Iterable().toList(),
           [0, 0, 0, 128]);
-      expect(new ListSet.fromSorted([200]).asUint64Iterable().toList(),
+      expect(ListSet.fromSorted([200]).asUint64Iterable().toList(),
           [0, 0, 0, 256]);
-      expect(new ListSet.fromSorted([201]).asUint64Iterable().toList(),
+      expect(ListSet.fromSorted([201]).asUint64Iterable().toList(),
           [0, 0, 0, 512]);
-      expect(new ListSet.fromSorted([2, 199]).asUint64Iterable().toList(),
+      expect(ListSet.fromSorted([2, 199]).asUint64Iterable().toList(),
           [4, 0, 0, 128]);
-      expect(new ListSet.fromSorted([2, 200]).asUint64Iterable().toList(),
+      expect(ListSet.fromSorted([2, 200]).asUint64Iterable().toList(),
           [4, 0, 0, 256]);
-      expect(new ListSet.fromSorted([2, 201]).asUint64Iterable().toList(),
+      expect(ListSet.fromSorted([2, 201]).asUint64Iterable().toList(),
           [4, 0, 0, 512]);
     });
   });
 
   group('RangeSet', () {
-    final set =
-        new RangeSet.fromSortedRangeLength([2, 0, 6, 3, 15, 2, 21, 4]);
+    final set = RangeSet.fromSortedRangeLength([2, 0, 6, 3, 15, 2, 21, 4]);
 
     test('simple values', () {
       expect(set.length, 25);
@@ -99,7 +98,7 @@ void main() {
   });
 }
 
-String _rev(String s) => new String.fromCharCodes(s.codeUnits.reversed);
+String _rev(String s) => String.fromCharCodes(s.codeUnits.reversed);
 
 void _testUint64(BitSet set, List<String> expected) {
   final list = set

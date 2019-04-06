@@ -5,7 +5,7 @@ import 'package:bit_array/bit_array.dart';
 void main() {
   group('CompositeSet', () {
     test('chunk boundaries', () {
-      final set = new CompositeSet();
+      final set = CompositeSet();
       set[65535] = true;
       expect(set.chunks, hasLength(1));
       expect(set.chunks.single.offset, 0);
@@ -21,7 +21,7 @@ void main() {
     });
 
     test('optimize empty set', () {
-      final set = new CompositeSet();
+      final set = CompositeSet();
       set[1] = false;
       expect(set.chunks, hasLength(1));
       set.optimize();
@@ -29,7 +29,7 @@ void main() {
     });
 
     test('optimize to single list', () {
-      final set = new CompositeSet();
+      final set = CompositeSet();
       set[1] = false;
       set[65537] = true;
       expect(set.chunks, hasLength(2));

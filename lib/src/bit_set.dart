@@ -50,7 +50,7 @@ class EmptySet implements BitSet {
 }
 
 /// Memory-efficient empty [BitSet] instance.
-const emptyBitSet = const EmptySet();
+const emptyBitSet = EmptySet();
 
 /// A list-based [BitSet] implementation.
 class ListSet implements BitSet {
@@ -91,7 +91,7 @@ class ListSet implements BitSet {
 
   @override
   BitSet clone() {
-    return new ListSet.fromSorted(_cloneList(_list));
+    return ListSet.fromSorted(_cloneList(_list));
   }
 
   @override
@@ -150,7 +150,7 @@ class RangeSet implements BitSet {
 
   @override
   BitSet clone() {
-    return new ListSet.fromSorted(_cloneList(_list));
+    return ListSet.fromSorted(_cloneList(_list));
   }
 
   @override
@@ -199,22 +199,22 @@ Iterable<int> _toUint64Iterable(Iterable<int> values) sync* {
 
 List<int> _cloneList(List<int> list) {
   if (list is Uint16List) {
-    final clone = new Uint16List(list.length);
+    final clone = Uint16List(list.length);
     clone.setRange(0, list.length, list);
     return clone;
   } else if (list is Uint8List) {
-    final clone = new Uint8List(list.length);
+    final clone = Uint8List(list.length);
     clone.setRange(0, list.length, list);
     return clone;
   } else if (list is Uint32List) {
-    final clone = new Uint32List(list.length);
+    final clone = Uint32List(list.length);
     clone.setRange(0, list.length, list);
     return clone;
   } else if (list is Uint64List) {
-    final clone = new Uint64List(list.length);
+    final clone = Uint64List(list.length);
     clone.setRange(0, list.length, list);
     return clone;
   } else {
-    return new List<int>.from(list);
+    return List<int>.from(list);
   }
 }

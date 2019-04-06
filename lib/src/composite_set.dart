@@ -18,9 +18,9 @@ class BitSetChunk {
   /// Returns the [bitSet] as [BitArray], and converts it if needed.
   BitArray asBitArray(int length) {
     if (_set is! BitArray) {
-      _set = new BitArray.fromBitSet(_set, length: length);
+      _set = BitArray.fromBitSet(_set, length: length);
     }
-    return _set;
+    return _set as BitArray;
   }
 }
 
@@ -41,7 +41,7 @@ class CompositeSet implements BitSet {
   final int _indexMask;
   final int _offsetMask;
 
-  CompositeSet({this.chunkBits: 16, List<BitSetChunk> chunks})
+  CompositeSet({this.chunkBits = 16, List<BitSetChunk> chunks})
       : _chunkLength = (1 << chunkBits),
         _indexMask = (1 << chunkBits) - 1,
         _offsetMask = ~((1 << chunkBits) - 1),
@@ -66,9 +66,8 @@ class CompositeSet implements BitSet {
   }
 
   @override
-  int get length => chunks.isEmpty
-      ? 0
-      : chunks.last.offset + chunks.last.bitSet.length;
+  int get length =>
+      chunks.isEmpty ? 0 : chunks.last.offset + chunks.last.bitSet.length;
 
   @override
   int get cardinality =>
@@ -109,7 +108,7 @@ class CompositeSet implements BitSet {
       if (a.offset < b.offset) {
         i++;
       } else if (a.offset > b.offset) {
-        final c = new BitSetChunk(b.offset, b.bitSet.clone());
+        final c = BitSetChunk(b.offset, b.bitSet.clone());
         chunks.insert(i, c);
         i++;
         j++;
@@ -128,17 +127,17 @@ class CompositeSet implements BitSet {
     }
     while (j < set.chunks.length) {
       final b = chunks[j++];
-      chunks.add(new BitSetChunk(b.offset, b.bitSet.clone()));
+      chunks.add(BitSetChunk(b.offset, b.bitSet.clone()));
     }
   }
 
   /// Optimize the containers.
-  void optimize({BitArrayOptimizer optimizer, int removeThreshold: 0}) {
+  void optimize({BitArrayOptimizer optimizer, int removeThreshold = 0}) {
     optimizer ??= chunkBits == 16 ? _optimizeBitArray16 : _simpleOptimizer;
     int removeCount = 0;
     for (BitSetChunk c in chunks) {
       if (c._set is BitArray) {
-        final bitSet = optimizer(c._set);
+        final bitSet = optimizer(c._set as BitArray);
         if (bitSet != null && bitSet is! BitArray) {
           c._set = bitSet;
         }
@@ -151,11 +150,11 @@ class CompositeSet implements BitSet {
   }
 
   @override
-  BitSet clone() {
-    return new CompositeSet(
+  CompositeSet clone() {
+    return CompositeSet(
       chunkBits: chunkBits,
       chunks: chunks
-          .map((bsc) => new BitSetChunk(bsc.offset, bsc.bitSet.clone()))
+          .map((bsc) => BitSetChunk(bsc.offset, bsc.bitSet.clone()))
           .toList(),
     );
   }
@@ -186,7 +185,7 @@ class CompositeSet implements BitSet {
       }
     }
     if (forInsert) {
-      final c = new BitSetChunk(offset, new BitArray(_chunkLength));
+      final c = BitSetChunk(offset, BitArray(_chunkLength));
       if (left == chunks.length) {
         chunks.add(c);
       } else {
@@ -205,7 +204,7 @@ BitSet _simpleOptimizer(BitArray array) {
     return emptyBitSet;
   }
   if (cardinality < (array.length >> 12)) {
-    return new ListSet.fromSorted(array.asIntIterable().toList());
+    return ListSet.fromSorted(array.asIntIterable().toList());
   }
   return array;
 }
@@ -216,9 +215,9 @@ BitSet _optimizeBitArray16(BitArray array) {
     return emptyBitSet;
   }
   if (cardinality < 1024) {
-    final list = new Uint16List(cardinality);
+    final list = Uint16List(cardinality);
     list.setRange(0, cardinality, array.asIntIterable());
-    return new ListSet.fromSorted(list);
+    return ListSet.fromSorted(list);
   }
   return array;
 }

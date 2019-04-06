@@ -5,7 +5,7 @@ import 'package:bit_array/bit_array.dart';
 void main() {
   group('BitArray', () {
     test('simple values', () {
-      final array = new BitArray(1024);
+      final array = BitArray(1024);
       for (int i = 0; i < 1024; i++) {
         expect(array[i], isFalse);
         expect(array.cardinality, 0);
@@ -19,7 +19,7 @@ void main() {
     });
 
     test('large patterns', () {
-      final array = new BitArray(1000000);
+      final array = BitArray(1000000);
       expect(array.cardinality, 0);
       expect(array.asIntIterable().toList(), []);
 
@@ -65,17 +65,17 @@ void main() {
     });
 
     test('array ops', () {
-      final oooo = new BitArray(64);
+      final oooo = BitArray(64);
       expect(oooo.toBinaryString().substring(0, 4), '0000');
       expect(oooo.asIntIterable(false).take(4).toList(), [0, 1, 2, 3]);
 
-      final oioi = new BitArray(64)..setBits([1, 3]);
+      final oioi = BitArray(64)..setBits([1, 3]);
       expect(oioi.toBinaryString().substring(0, 4), '0101');
 
-      final ioio = new BitArray(64)..setBits([0, 2]);
+      final ioio = BitArray(64)..setBits([0, 2]);
       expect(ioio.toBinaryString().substring(0, 4), '1010');
 
-      final iiii = new BitArray(64)..setBits([0, 1, 2, 3]);
+      final iiii = BitArray(64)..setBits([0, 1, 2, 3]);
       expect(iiii.toBinaryString().substring(0, 4), '1111');
 
       expect((oioi & iiii).toBinaryString().substring(0, 4), '0101');
@@ -89,9 +89,9 @@ void main() {
   });
 
   group('BitArray + BitSet', () {
-    final array = new BitArray(128)..setBits([13, 113]);
-    final list = new ListSet.fromSorted([13, 33]);
-    final range = new RangeSet.fromSortedRangeLength([110, 3]);
+    final array = BitArray(128)..setBits([13, 113]);
+    final list = ListSet.fromSorted([13, 33]);
+    final range = RangeSet.fromSortedRangeLength([110, 3]);
 
     test('and', () {
       expect(

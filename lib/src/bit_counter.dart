@@ -34,7 +34,7 @@ class BitCounter {
     while (value > 0) {
       BitArray array;
       if (_bits.length == pos) {
-        array = new BitArray(_length);
+        array = BitArray(_length);
         _bits.add(array);
       } else {
         array = _bits[pos];
@@ -50,7 +50,7 @@ class BitCounter {
 
   /// Returns the binary string representation of the count at the given [index].
   String toBinaryString(int index) {
-    final sb = new StringBuffer();
+    final sb = StringBuffer();
     for (int i = _bits.length - 1; i >= 0; i--) {
       final value = _bits[i][index];
       if (sb.isEmpty && !value) continue;
@@ -68,20 +68,25 @@ class BitCounter {
   }
 
   /// Adds a [set] to the counter.
-  void addBitSet(BitSet set) {
+  ///
+  /// The add starts at the bit position specified by [shiftLeft].
+  void addBitSet(BitSet set, {int shiftLeft = 0}) {
     if (_length < set.length) {
       _length = set.length;
       _bits.forEach((a) => a.length = _length);
+    }
+    for (int i = _bits.length; i < shiftLeft; i++) {
+      _bits.add(BitArray(_length));
     }
     final arrayDataLength = _bufferLength64(_length);
     final iterator = set.asUint64Iterable().iterator;
     for (int i = 0; i < arrayDataLength && iterator.moveNext(); i++) {
       int overflow = iterator.current;
 
-      for (int pos = 0; overflow != 0; pos++) {
+      for (int pos = shiftLeft; overflow != 0; pos++) {
         BitArray counter;
         if (_bits.length == pos) {
-          counter = new BitArray(_length);
+          counter = BitArray(_length);
           _bits.add(counter);
         } else {
           counter = _bits[pos];
@@ -94,12 +99,26 @@ class BitCounter {
     }
   }
 
+  /// Adds a [counter] to the set.
+  ///
+  /// The add starts at the bit position specified by [shiftLeft].
+  void addBitCounter(BitCounter counter, {int shiftLeft = 0}) {
+    for (int i = 0; i < counter.bitLength; i++) {
+      addBitSet(counter.bits[i], shiftLeft: shiftLeft + i);
+    }
+  }
+
   /// Increments the value at the [index].
-  void increment(int index) {
-    for (int pos = 0;; pos++) {
+  ///
+  /// The increment starts at the bit position specified by [shiftLeft].
+  void increment(int index, {int shiftLeft = 0}) {
+    for (int i = _bits.length; i < shiftLeft; i++) {
+      _bits.add(BitArray(_length));
+    }
+    for (int pos = shiftLeft;; pos++) {
       BitArray counter;
       if (_bits.length == pos) {
-        counter = new BitArray(_length);
+        counter = BitArray(_length);
         _bits.add(counter);
       } else {
         counter = _bits[pos];
@@ -112,5 +131,59 @@ class BitCounter {
         break;
       }
     }
+  }
+
+  /// Multiply this instance with [value] and return the result.
+  BitCounter multiply(int value) {
+    final result = BitCounter(_length);
+    int shiftLeft = 0;
+    while (value > 0) {
+      final bit = value & 0x01;
+      if (bit == 1) {
+        result.addBitCounter(this, shiftLeft: shiftLeft);
+      }
+      value = value >> 1;
+      shiftLeft++;
+    }
+    return result;
+  }
+
+  /// Multiply this instance with [counter] and return the result.
+  BitCounter multiplyWithCounter(BitCounter counter) {
+    final result = BitCounter(math.min(_length, counter._length));
+    for (int i = 0; i < bitLength; i++) {
+      for (int j = 0; j < counter.bitLength; j++) {
+        final ba = _bits[i].clone()..and(counter._bits[j]);
+        result.addBitSet(ba, shiftLeft: i + j);
+      }
+    }
+    return result;
+  }
+
+  /// Add [bits] cleared bits to the lower binary digits.
+  void shiftLeft(int bits) {
+    if (bits <= 0) return;
+    final list = List<BitArray>.generate(bits, (i) => BitArray(_length));
+    _bits.insertAll(0, list);
+  }
+
+  /// Remove [bits] lower binary digits.
+  void shiftRight(int bits) {
+    if (bits <= 0) return;
+    final end = math.min(bits, bitLength);
+    if (end > 0) {
+      _bits.removeRange(0, end);
+    }
+  }
+
+  /// Creates a copy of the current [BitCounter].
+  ///
+  /// The cloned instance starts at the bit position specified by [shiftRight].
+  BitCounter clone({int shiftRight = 0}) {
+    final c = BitCounter(_length);
+    for (int i = shiftRight; i < bitLength; i++) {
+      c._bits.add(_bits[i].clone());
+    }
+    return c;
   }
 }

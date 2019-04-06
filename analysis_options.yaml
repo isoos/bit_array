@@ -1,14 +1,30 @@
+include: package:pedantic/analysis_options.yaml
+
 analyzer:
-#   exclude:
-#     - path/to/excluded/files/**
+  strong-mode:
+    implicit-casts: false
+  errors:
+    unused_import: error
+    unused_local_variable: error
+    dead_code: error
 
 # Lint rules and documentation, see http://dart-lang.github.io/linter/lints
 linter:
   rules:
+    - annotate_overrides
     - cancel_subscriptions
+    - directives_ordering
     - hash_and_equals
     - iterable_contains_unrelated_type
     - list_remove_unrelated_type
     - test_types_in_equals
+    - unnecessary_brace_in_string_interps
+    - unnecessary_const
+    - unnecessary_getters_setters
+    - unnecessary_lambdas
+    - unnecessary_new
+    - unnecessary_null_aware_assignments
+    - unnecessary_statements
+    - unnecessary_this
     - unrelated_type_equality_checks
     - valid_regexps

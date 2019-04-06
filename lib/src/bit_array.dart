@@ -11,21 +11,21 @@ class BitArray implements BitSet {
   ///
   /// [length] will be rounded up to match the 64-bit boundary.
   factory BitArray(int length) =>
-      new BitArray._(new Uint64List(_bufferLength64(length)));
+      BitArray._(Uint64List(_bufferLength64(length)));
 
   /// Creates a bit array using a byte buffer.
   factory BitArray.fromByteBuffer(ByteBuffer buffer) {
     final data = buffer.asUint64List();
-    return new BitArray._(data);
+    return BitArray._(data);
   }
 
   /// Creates a bit array using a generic bit set.
   factory BitArray.fromBitSet(BitSet set, {int length}) {
     length ??= set.length;
     final setDataLength = _bufferLength64(set.length);
-    final data = new Uint64List(_bufferLength64(length));
+    final data = Uint64List(_bufferLength64(length));
     data.setRange(0, setDataLength, set.asUint64Iterable());
-    return new BitArray._(data);
+    return BitArray._(data);
   }
 
   /// The value of the bit with the specified [index].
@@ -48,12 +48,13 @@ class BitArray implements BitSet {
   /// [length] will be rounded up to match the 64-bit boundary.
   ///
   /// The valid index values for the array are `0` through `length - 1`.
+  @override
   int get length => _length;
-  void set length(int value) {
+  set length(int value) {
     if (_length == value) {
       return;
     }
-    final data = new Uint64List(_bufferLength64(value));
+    final data = Uint64List(_bufferLength64(value));
     data.setRange(0, math.min(data.length, _data.length), _data);
     _data = data;
     _length = _data.length << 6;
@@ -112,7 +113,7 @@ class BitArray implements BitSet {
   /// Inverts all the bit values in the current [BitArray].
   void invertAll() {
     for (int i = 0; i < _data.length; i++) {
-      _data[i] = ~_data[i];
+      _data[i] = ~(_data[i]);
     }
   }
 
@@ -163,34 +164,34 @@ class BitArray implements BitSet {
   /// Creates a copy of the current [BitArray].
   @override
   BitArray clone() {
-    final newData = new Uint64List(_data.length);
+    final newData = Uint64List(_data.length);
     newData.setRange(0, _data.length, _data);
-    return new BitArray._(newData);
+    return BitArray._(newData);
   }
 
-  /// Creates a new [BitArray] using a logical AND operation with the
+  /// Creates a [BitArray] using a logical AND operation with the
   /// corresponding elements in the specified [set].
   /// Excess size of the [set] is ignored.
   BitArray operator &(BitSet set) => clone()..and(set);
 
-  /// Creates a new [BitArray] using a logical AND NOT operation with the
+  /// Creates a [BitArray] using a logical AND NOT operation with the
   /// corresponding elements in the specified [set].
   /// Excess size of the [set] is ignored.
   BitArray operator %(BitSet set) => clone()..andNot(set);
 
-  /// Creates a new [BitArray] using a logical OR operation with the
+  /// Creates a [BitArray] using a logical OR operation with the
   /// corresponding elements in the specified [set].
   /// Excess size of the [set] is ignored.
   BitArray operator |(BitSet set) => clone()..or(set);
 
-  /// Creates a new [BitArray] using a logical XOR operation with the
+  /// Creates a [BitArray] using a logical XOR operation with the
   /// corresponding elements in the specified [set].
   /// Excess size of the [set] is ignored.
   BitArray operator ^(BitSet set) => clone()..xor(set);
 
   /// Creates a string of 0s and 1s of the content of the array.
   String toBinaryString() {
-    final sb = new StringBuffer();
+    final sb = StringBuffer();
     for (int i = 0; i < length; i++) {
       sb.write(this[i] ? '1' : '0');
     }
@@ -210,13 +211,13 @@ class BitArray implements BitSet {
   /// numbers that match [value] (by default the bits that are set).
   @override
   Iterable<int> asIntIterable([bool value = true]) {
-    return new _IntIterable(this, value);
+    return _IntIterable(this, value);
   }
 }
 
-final _bitMask = new List<int>.generate(64, (i) => 1 << i);
-final _clearMask = new List<int>.generate(64, (i) => ~(1 << i));
-final _cardinalityBitCounts = new List<int>.generate(256, _cardinalityOfByte);
+final _bitMask = List<int>.generate(64, (i) => 1 << i);
+final _clearMask = List<int>.generate(64, (i) => ~(1 << i));
+final _cardinalityBitCounts = List<int>.generate(256, _cardinalityOfByte);
 
 int _cardinalityOfByte(int value) {
   int result = 0;
@@ -236,7 +237,7 @@ class _IntIterable extends IterableBase<int> {
 
   @override
   Iterator<int> get iterator =>
-      new _IntIterator(_array._data, _array.length, _value);
+      _IntIterator(_array._data, _array.length, _value);
 }
 
 class _IntIterator implements Iterator<int> {
