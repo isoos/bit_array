@@ -66,6 +66,16 @@ class BitArray implements BitSet {
       .asUint8List()
       .fold(0, (sum, value) => sum + _cardinalityBitCounts[value]);
 
+  /// Whether the [BitArray] is empty == has only zero values.
+  bool get isEmpty {
+    return _data.every((i) => i == 0);
+  }
+
+  /// Whether the [BitArray] is not empty == has set values.
+  bool get isNotEmpty {
+    return _data.any((i) => i != 0);
+  }
+
   /// Sets the bit specified by the [index] to false.
   void clearBit(int index) {
     _data[index >> 6] &= _clearMask[index & 0x3f];

@@ -160,6 +160,17 @@ class BitCounter {
     return result;
   }
 
+  /// Multiply this instance with [value] and return the result.
+  BitCounter operator *(/* int | BitCounter */ dynamic value) {
+    if (value is int) {
+      return multiply(value);
+    } else if (value is BitCounter) {
+      return multiplyWithCounter(value);
+    } else {
+      throw Exception('Unknown multiplier type: ${value.runtimeType}');
+    }
+  }
+
   /// Add [bits] cleared bits to the lower binary digits.
   void shiftLeft(int bits) {
     if (bits <= 0) return;
@@ -173,6 +184,144 @@ class BitCounter {
     final end = math.min(bits, bitLength);
     if (end > 0) {
       _bits.removeRange(0, end);
+    }
+  }
+
+  /// Returns a [BitArray] which is true for every position where the current
+  /// [BitCounter] has a value larger or equal to [minValue].
+  BitArray toMask({int minValue = 1}) {
+    if (minValue < 1) {
+      throw ArgumentError('minValue must be at least 1.');
+    }
+    if (bitLength == 0) return BitArray(0);
+    if (minValue == 1) {
+      final r = _bits[0].clone();
+      for (int i = 1; i < bitLength; i++) {
+        r.or(_bits[i]);
+      }
+      return r;
+    } else {
+      final other = <int>[];
+      minValue--;
+      while (minValue > 0) {
+        final bit = minValue & 0x01;
+        other.add(bit == 0 ? 0 : ~0);
+        minValue >>= 1;
+      }
+      final r = BitArray(_length);
+      final bl = math.max(bitLength, other.length);
+      final dataLength = _bits[0]._data.length;
+      for (int i = 0; i < dataLength; i++) {
+        int ub = -1;
+        for (int j = 0; j < bl; j++) {
+          final av = j >= bitLength ? 0 : bits[j]._data[i];
+          final bv = j >= other.length ? 0 : other[j];
+
+          final ag = av & (~bv);
+          final bg = bv & (~av);
+          ub = bg | (ub & (~ag));
+        }
+        r._data[i] = ~ub;
+      }
+      return r;
+    }
+  }
+
+  /// Updates the values to the maximum of the pairwise values with [other].
+  void max(BitCounter other) {
+    if (_length != other._length) {
+      throw ArgumentError(
+          'Length does not match: $_length != ${other._length}');
+    }
+    if (bitLength == 0) {
+      _bits.addAll(other._bits.map((a) => a.clone()));
+      return;
+    } else if (other.bitLength == 0) {
+      return;
+    }
+    while (bitLength < other.bitLength) {
+      _bits.add(BitArray(_length));
+    }
+    final dataLength = _bits[0]._data.length;
+    for (int i = 0; i < dataLength; i++) {
+      int ua = -1;
+      for (int j = 0; j < bitLength; j++) {
+        final av = bits[j]._data[i];
+        final bv = j >= other.bitLength ? 0 : other.bits[j]._data[i];
+
+        final ag = av & (~bv);
+        final bg = bv & (~av);
+        ua = ag | (ua & (~bg));
+      }
+      for (int j = 0; j < bitLength; j++) {
+        final av = bits[j]._data[i];
+        final bv = j >= other.bitLength ? 0 : other.bits[j]._data[i];
+        _bits[j]._data[i] = (ua & av) | ((~ua) & bv);
+      }
+    }
+  }
+
+  /// Updates the values to the minimum of the pairwise values with [other].
+  ///
+  /// The most significant bits will be removed if they are all-zero.
+  void min(BitCounter other) {
+    if (_length != other._length) {
+      throw ArgumentError(
+          'Length does not match: $_length != ${other._length}');
+    }
+    if (bitLength == 0) {
+      return;
+    } else if (other.bitLength == 0) {
+      _bits.clear();
+      return;
+    }
+    final mbl = math.max(bitLength, other.bitLength);
+    final dataLength = _bits[0]._data.length;
+    for (int i = 0; i < dataLength; i++) {
+      int ub = -1;
+      for (int j = 0; j < mbl; j++) {
+        final av = j >= bitLength ? 0 : bits[j]._data[i];
+        final bv = j >= other.bitLength ? 0 : other.bits[j]._data[i];
+
+        final ag = av & (~bv);
+        final bg = bv & (~av);
+        ub = ag | (ub & (~bg));
+      }
+      for (int j = 0; j < bitLength; j++) {
+        final av = bits[j]._data[i];
+        final bv = j >= other.bitLength ? 0 : other.bits[j]._data[i];
+        _bits[j]._data[i] = (ub & bv) | ((~ub) & av);
+      }
+    }
+    while (bitLength > 0 && _bits.last.isEmpty) {
+      _bits.removeLast();
+    }
+  }
+
+  /// Update the current [BitCounter] using a logical AND operation with the
+  /// corresponding elements in the specified [set].
+  ///
+  /// Excess size of the [set] is ignored.
+  ///
+  /// The most significant bits will be removed if they are all-zero.
+  void applyMask(BitSet set) {
+    if (bitLength == 0) return;
+    final dataLength = _bits.first._data.length;
+    final iter = set.asUint64Iterable().iterator;
+    int i = 0;
+    for (; i < dataLength && iter.moveNext(); i++) {
+      final cv = iter.current;
+      for (int j = 0; j < _bits.length; j++) {
+        _bits[j]._data[i] &= cv;
+      }
+    }
+    for (; i < dataLength; i++) {
+      for (int j = 0; j < _bits.length; j++) {
+        _bits[j]._data[i] = 0;
+      }
+    }
+    while (bitLength > 0 && _bits.last.isEmpty) {
+      _bits.removeLast();
     }
   }
 

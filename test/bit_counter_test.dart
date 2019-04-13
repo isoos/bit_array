@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:test/test.dart';
 
 import 'package:bit_array/bit_array.dart';
@@ -111,7 +113,7 @@ void main() {
       for (int i = 0; i < 128; i++) {
         c1[i] = i;
       }
-      final c3 = c1.multiply(5);
+      final c3 = c1 * 5;
       expect(c3[0], 0);
       expect(c3[10], 50);
       expect(c3[98], 490);
@@ -130,7 +132,7 @@ void main() {
         c1[i] = i;
         c2[i] = (i % 17) + (i % 3);
       }
-      final c3 = c1.multiplyWithCounter(c2);
+      final c3 = c1 * c2;
       expect(c3[0], 0);
       expect(c3[10], 110);
       expect(c3[98], 1470);
@@ -141,6 +143,100 @@ void main() {
       expect(c1.bitLength, 7);
       expect(c2.bitLength, 5);
       expect(c3.bitLength, 11);
+    });
+
+    test('toMask', () {
+      final c = BitCounter(128);
+      for (int i = 0; i < 128; i++) {
+        c[i] = (i % 7) + (i % 3);
+      }
+      final b1 = c.toMask();
+      b1.invertAll();
+      expect(
+          b1.toBinaryString(),
+          '100000000000000000000'
+          '100000000000000000000'
+          '100000000000000000000'
+          '100000000000000000000'
+          '100000000000000000000'
+          '100000000000000000000'
+          '10');
+
+      expect(c.toMask(minValue: 9).isEmpty, true);
+
+      final m8 = c.toMask(minValue: 8);
+      expect(m8.cardinality, 6);
+      expect(
+          m8.toBinaryString(),
+          '000000000000000000001'
+          '000000000000000000001'
+          '000000000000000000001'
+          '000000000000000000001'
+          '000000000000000000001'
+          '000000000000000000001'
+          '00');
+
+      final m7 = c.toMask(minValue: 7);
+      expect(m7.cardinality, 18);
+      expect(
+          m7.toBinaryString(),
+          '000001000000010000001'
+          '000001000000010000001'
+          '000001000000010000001'
+          '000001000000010000001'
+          '000001000000010000001'
+          '000001000000010000001'
+          '00');
+
+      final m2 = c.toMask(minValue: 2);
+      expect(m2.cardinality, 109);
+      expect(
+          m2.toBinaryString(),
+          '011111101111111011111'
+          '011111101111111011111'
+          '011111101111111011111'
+          '011111101111111011111'
+          '011111101111111011111'
+          '011111101111111011111'
+          '01');
+    });
+
+    test('min/max', () {
+      final c1 = BitCounter(128);
+      final c2 = BitCounter(128);
+      for (int i = 0; i < 128; i++) {
+        c1[i] = i;
+        c2[i] = (i % 17) + (i % 23);
+      }
+      final cmin = c1.clone()..min(c2);
+      final cmax = c1.clone()..max(c2);
+      expect(cmin[16], 16);
+      expect(cmin[18], 18);
+      expect(cmin[100], 23);
+      expect(cmax[16], 32);
+      expect(cmax[18], 19);
+      expect(cmax[100], 100);
+      for (int i = 0; i < 128; i++) {
+        final v2 = (i % 17) + (i % 23);
+        expect('$i-${cmin[i]}', '$i-${min(i, v2)}');
+        expect('$i-${cmax[i]}', '$i-${max(i, v2)}');
+      }
+      expect(cmin.bitLength, 6);
+      expect(cmax.bitLength, 7);
+    });
+
+    test('and', () {
+      final c1 = BitCounter(128);
+      for (int i = 0; i < 128; i++) {
+        c1[i] = i;
+      }
+      c1.applyMask(ListSet.fromSorted([3, 100]));
+      expect(c1.bitLength, 7);
+      expect(c1[3], 3);
+      expect(c1[4], 0);
+      expect(c1[100], 100);
+      c1.applyMask(ListSet.fromSorted([3]));
+      expect(c1.bitLength, 2);
     });
   });
 }

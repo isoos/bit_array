@@ -87,7 +87,7 @@ class CompositeCounter {
     return CompositeCounter(
       chunkBits: chunkBits,
       chunks: chunks
-          .map((c) => BitCounterChunk(c.offset, c.bitCounter.multiply(value)))
+          .map((c) => BitCounterChunk(c.offset, c.bitCounter * value))
           .toList(),
     );
   }
@@ -102,12 +102,23 @@ class CompositeCounter {
     for (BitCounterChunk bcc in counter.chunks) {
       final c = _getChunk(bcc.offset);
       if (c == null) continue;
-      final m = c.bitCounter.multiplyWithCounter(bcc.bitCounter);
+      final m = c.bitCounter * bcc.bitCounter;
       if (m.bitLength == 0) continue;
       if (m.bitLength == 1 && m._bits[0].cardinality == 0) continue;
       result.chunks.add(BitCounterChunk(bcc.offset, m));
     }
     return result;
+  }
+
+  /// Multiply this instance with [value] and return the result.
+  CompositeCounter operator *(/* int | CompositeCounter */ dynamic value) {
+    if (value is int) {
+      return multiply(value);
+    } else if (value is CompositeCounter) {
+      return multiplyWithCounter(value);
+    } else {
+      throw Exception('Unknown multiplier type: ${value.runtimeType}');
+    }
   }
 
   /// Increments the value at the [index].
@@ -133,6 +144,85 @@ class CompositeCounter {
     chunks.forEach((c) {
       c.bitCounter.shiftRight(bits);
     });
+  }
+
+  /// Returns a [CompositeSet] which is true for every position where the
+  /// current [CompositeCounter()] has a value larger or equal to [minValue].
+  CompositeSet toMask({int minValue = 1}) {
+    return CompositeSet(
+        chunkBits: chunkBits,
+        chunks: chunks
+            .map((c) {
+              final set = c.bitCounter.toMask(minValue: minValue);
+              if (set.isEmpty) return null;
+              return BitSetChunk(c.offset, set);
+            })
+            .where((c) => c != null)
+            .toList());
+  }
+
+  /// Updates the values to the maximum of the pairwise values with [other].
+  void max(CompositeCounter other) {
+    if (chunkBits != other.chunkBits) {
+      throw Exception('chunkBits must match: $chunkBits != ${other.chunkBits}');
+    }
+    for (BitCounterChunk oc in other.chunks) {
+      final c = _getChunk(oc.offset, true);
+      if (c.bitCounter.bitLength == 0) {
+        c.bitCounter._bits.addAll(oc.bitCounter._bits.map((a) => a.clone()));
+      } else {
+        c.bitCounter.max(oc.bitCounter);
+      }
+    }
+  }
+
+  /// Updates the values to the minimum of the pairwise values with [other].
+  ///
+  /// The most significant bits will be removed if they are all-zero.
+  void min(CompositeCounter other) {
+    if (chunkBits != other.chunkBits) {
+      throw Exception('chunkBits must match: $chunkBits != ${other.chunkBits}');
+    }
+    final lastOffset = other.chunks.isEmpty ? -1 : other.chunks.last.offset;
+    while (chunks.isNotEmpty && chunks.last.offset > lastOffset) {
+      chunks.removeLast();
+    }
+    final newChunks = <BitCounterChunk>[];
+    for (BitCounterChunk oc in other.chunks) {
+      final c = _getChunk(oc.offset, false);
+      if (c == null) continue;
+      c.bitCounter.min(oc.bitCounter);
+      if (c.bitCounter.bitLength > 0) {
+        newChunks.add(c);
+      }
+    }
+    chunks.replaceRange(0, chunks.length, newChunks);
+  }
+
+  /// Update the current [CompositeCounter] using a logical AND operation with
+  /// the corresponding elements in the specified [set].
+  ///
+  /// Excess size of the [set] is ignored.
+  ///
+  /// The most significant bits will be removed if they are all-zero.
+  void applyMask(CompositeSet set) {
+    if (chunkBits != set.chunkBits) {
+      throw Exception('chunkBits must match: $chunkBits != ${set.chunkBits}');
+    }
+    final lastOffset = set.chunks.isEmpty ? -1 : set.chunks.last.offset;
+    while (chunks.isNotEmpty && chunks.last.offset > lastOffset) {
+      chunks.removeLast();
+    }
+    final newChunks = <BitCounterChunk>[];
+    for (BitSetChunk oc in set.chunks) {
+      final c = _getChunk(oc.offset, false);
+      if (c == null) continue;
+      c.bitCounter.applyMask(oc.bitSet);
+      if (c.bitCounter.bitLength > 0) {
+        newChunks.add(c);
+      }
+    }
+    chunks.replaceRange(0, chunks.length, newChunks);
   }
 
   /// Creates a copy of the current [CompositeCounter].

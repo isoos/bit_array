@@ -1,3 +1,9 @@
+## 1.2.0
+
+- Counter multiplication can be done with `operator *`.
+- Support of masking counter (with threshold value).
+- Support of efficient `min` and `max` operations in counters.
+
 ## 1.1.0
 
 - `CompositeSet.clone` returns `CompositeSet`.

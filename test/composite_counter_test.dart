@@ -27,7 +27,7 @@ void main() {
       final c1 = CompositeCounter()
         ..[2] = 2
         ..[1000000] = 17;
-      final c3 = c1.multiply(5);
+      final c3 = c1 * 5;
       expect(c3.chunks.length, 2);
       expect(c3.chunks.last.offset, 983040);
       expect(c3[2], 10);
@@ -39,7 +39,7 @@ void main() {
         ..[2] = 2
         ..[1000000] = 17;
       final c2 = CompositeCounter()..[1000000] = 13;
-      final c3 = c1.multiplyWithCounter(c2);
+      final c3 = c1 * c2;
       expect(c3.chunks.length, 1);
       expect(c3.chunks.single.offset, 983040);
       expect(c3[2], 0);
