@@ -17,9 +17,9 @@ abstract class BitSet {
   BitSet clone();
 
   /// Returns an iterable wrapper that returns the content of the [BitSet] as
-  /// 64-bit int blocks. Members are iterated from a zero-based index and each
-  /// block contains 64 values as a bit index.
-  Iterable<int> asUint64Iterable();
+  /// 32-bit int blocks. Members are iterated from a zero-based index and each
+  /// block contains 32 values as a bit index.
+  Iterable<int> asUint32Iterable();
 
   /// Returns an iterable wrapper of the [BitSet] that iterates over the index
   /// members that are set to true.
@@ -46,7 +46,7 @@ class EmptySet implements BitSet {
   Iterable<int> asIntIterable() => const Iterable<int>.empty();
 
   @override
-  Iterable<int> asUint64Iterable() => const Iterable<int>.empty();
+  Iterable<int> asUint32Iterable() => const Iterable<int>.empty();
 }
 
 /// Memory-efficient empty [BitSet] instance.
@@ -95,7 +95,7 @@ class ListSet implements BitSet {
   }
 
   @override
-  Iterable<int> asUint64Iterable() => _toUint64Iterable(asIntIterable());
+  Iterable<int> asUint32Iterable() => _toUint32Iterable(asIntIterable());
 
   @override
   Iterable<int> asIntIterable() => _list;
@@ -154,7 +154,7 @@ class RangeSet implements BitSet {
   }
 
   @override
-  Iterable<int> asUint64Iterable() => _toUint64Iterable(asIntIterable());
+  Iterable<int> asUint32Iterable() => _toUint32Iterable(asIntIterable());
 
   @override
   Iterable<int> asIntIterable() sync* {
@@ -168,17 +168,17 @@ class RangeSet implements BitSet {
   }
 }
 
-Iterable<int> _toUint64Iterable(Iterable<int> values) sync* {
+Iterable<int> _toUint32Iterable(Iterable<int> values) sync* {
   final iter = values.iterator;
   int blockOffset = 0;
-  int blockLast = 63;
+  int blockLast = 31;
   int block = 0;
   bool hasCurrent = iter.moveNext();
   while (hasCurrent) {
     if (block == 0 && iter.current > blockLast) {
       yield 0;
-      blockOffset += 64;
-      blockLast += 64;
+      blockOffset += 32;
+      blockLast += 32;
       continue;
     } else if (iter.current <= blockLast) {
       final offset = iter.current - blockOffset;
@@ -188,8 +188,8 @@ Iterable<int> _toUint64Iterable(Iterable<int> values) sync* {
     } else {
       yield block;
       block = 0;
-      blockOffset += 64;
-      blockLast += 64;
+      blockOffset += 32;
+      blockLast += 32;
     }
   }
   if (block != 0) {
@@ -208,10 +208,6 @@ List<int> _cloneList(List<int> list) {
     return clone;
   } else if (list is Uint32List) {
     final clone = Uint32List(list.length);
-    clone.setRange(0, list.length, list);
-    return clone;
-  } else if (list is Uint64List) {
-    final clone = Uint64List(list.length);
     clone.setRange(0, list.length, list);
     return clone;
   } else {

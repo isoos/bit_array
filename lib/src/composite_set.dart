@@ -160,7 +160,7 @@ class CompositeSet implements BitSet {
   }
 
   @override
-  Iterable<int> asUint64Iterable() => _toUint64Iterable(asIntIterable());
+  Iterable<int> asUint32Iterable() => _toUint32Iterable(asIntIterable());
 
   @override
   Iterable<int> asIntIterable() sync* {
