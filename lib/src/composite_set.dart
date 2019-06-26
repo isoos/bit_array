@@ -78,7 +78,7 @@ class CompositeSet extends BitSet {
     int j = 0;
     while (i < chunks.length && j < set.chunks.length) {
       final a = chunks[i];
-      final b = chunks[j];
+      final b = set.chunks[j];
       if (a.offset < b.offset) {
         a._set = emptyBitSet;
         i++;
@@ -104,7 +104,7 @@ class CompositeSet extends BitSet {
     int j = 0;
     while (i < chunks.length && j < set.chunks.length) {
       final a = chunks[i];
-      final b = chunks[j];
+      final b = set.chunks[j];
       if (a.offset < b.offset) {
         i++;
       } else if (a.offset > b.offset) {
