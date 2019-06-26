@@ -1,7 +1,7 @@
 part of bit_array;
 
 /// Bit array to store bits.
-class BitArray implements BitSet {
+class BitArray extends BitSet {
   Uint32List _data;
   int _length;
 

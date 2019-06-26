@@ -28,7 +28,7 @@ class BitSetChunk {
 ///
 /// By default, each chunk is using a maximum cardinality of 2^16 entries,
 /// following the RoaringBitmap pattern.
-class CompositeSet implements BitSet {
+class CompositeSet extends BitSet {
   /// The bits used for each chunk.
   final int chunkBits;
 

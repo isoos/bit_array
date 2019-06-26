@@ -88,6 +88,24 @@ void main() {
     });
   });
 
+  group('BitArray equals and hashCode', () {
+    final oiii = BitArray(32)..setBits([1, 2, 3]);
+    final oioi = BitArray(32)..setBits([1, 3]);
+    final ooio = BitArray(32)..setBits([2]);
+
+    test('equals', () {
+      expect(oiii ^ oioi, equals(ooio));
+    });
+
+    test('not equals', () {
+      expect(oiii, isNot(ooio));
+    });
+
+    test('hashCode', () {
+      expect((oiii ^ oioi).hashCode, equals(ooio.hashCode));
+    });
+  });
+
   group('BitArray + BitSet', () {
     final array = BitArray(128)..setBits([13, 113]);
     final list = ListSet.fromSorted([13, 33]);

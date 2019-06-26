@@ -24,6 +24,32 @@ abstract class BitSet {
   /// Returns an iterable wrapper of the [BitSet] that iterates over the index
   /// members that are set to true.
   Iterable<int> asIntIterable();
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is BitSet &&
+        runtimeType == other.runtimeType &&
+        length == other.length) {
+      final iter = asUint32Iterable().iterator;
+      final otherIter = other.asUint32Iterable().iterator;
+      while (iter.moveNext() && otherIter.moveNext()) {
+        if (iter.current != otherIter.current) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode =>
+      asUint32Iterable().fold(
+          0, (int previousValue, element) => previousValue ^ element.hashCode) ^
+      length.hashCode;
 }
 
 /// Memory-efficient empty [BitSet].
@@ -53,7 +79,7 @@ class EmptySet implements BitSet {
 const emptyBitSet = EmptySet();
 
 /// A list-based [BitSet] implementation.
-class ListSet implements BitSet {
+class ListSet extends BitSet {
   final List<int> _list;
 
   ListSet.fromSorted(this._list);
@@ -102,7 +128,7 @@ class ListSet implements BitSet {
 }
 
 /// A range-based [BitSet] implementation.
-class RangeSet implements BitSet {
+class RangeSet extends BitSet {
   final List<int> _list;
 
   RangeSet.fromSortedRangeLength(this._list);
