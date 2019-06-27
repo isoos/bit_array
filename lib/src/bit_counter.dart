@@ -78,8 +78,8 @@ class BitCounter {
     for (int i = _bits.length; i < shiftLeft; i++) {
       _bits.add(BitArray(_length));
     }
-    final arrayDataLength = _bufferLength64(_length);
-    final iterator = set.asUint64Iterable().iterator;
+    final arrayDataLength = _bufferLength32(_length);
+    final iterator = set.asUint32Iterable().iterator;
     for (int i = 0; i < arrayDataLength && iterator.moveNext(); i++) {
       int overflow = iterator.current;
 
@@ -307,7 +307,7 @@ class BitCounter {
   void applyMask(BitSet set) {
     if (bitLength == 0) return;
     final dataLength = _bits.first._data.length;
-    final iter = set.asUint64Iterable().iterator;
+    final iter = set.asUint32Iterable().iterator;
     int i = 0;
     for (; i < dataLength && iter.moveNext(); i++) {
       final cv = iter.current;

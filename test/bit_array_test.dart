@@ -65,17 +65,17 @@ void main() {
     });
 
     test('array ops', () {
-      final oooo = BitArray(64);
+      final oooo = BitArray(32);
       expect(oooo.toBinaryString().substring(0, 4), '0000');
       expect(oooo.asIntIterable(false).take(4).toList(), [0, 1, 2, 3]);
 
-      final oioi = BitArray(64)..setBits([1, 3]);
+      final oioi = BitArray(32)..setBits([1, 3]);
       expect(oioi.toBinaryString().substring(0, 4), '0101');
 
-      final ioio = BitArray(64)..setBits([0, 2]);
+      final ioio = BitArray(32)..setBits([0, 2]);
       expect(ioio.toBinaryString().substring(0, 4), '1010');
 
-      final iiii = BitArray(64)..setBits([0, 1, 2, 3]);
+      final iiii = BitArray(32)..setBits([0, 1, 2, 3]);
       expect(iiii.toBinaryString().substring(0, 4), '1111');
 
       expect((oioi & iiii).toBinaryString().substring(0, 4), '0101');
@@ -85,6 +85,24 @@ void main() {
       expect((oioi % oooo).toBinaryString().substring(0, 4), '0101');
       expect((oioi ^ oooo).toBinaryString().substring(0, 4), '0101');
       expect((oioi ^ ioio).toBinaryString().substring(0, 4), '1111');
+    });
+  });
+
+  group('BitArray equals and hashCode', () {
+    final oiii = BitArray(32)..setBits([1, 2, 3]);
+    final oioi = BitArray(32)..setBits([1, 3]);
+    final ooio = BitArray(32)..setBits([2]);
+
+    test('equals', () {
+      expect(oiii ^ oioi, equals(ooio));
+    });
+
+    test('not equals', () {
+      expect(oiii, isNot(ooio));
+    });
+
+    test('hashCode', () {
+      expect((oiii ^ oioi).hashCode, equals(ooio.hashCode));
     });
   });
 

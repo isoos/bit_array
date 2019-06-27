@@ -39,4 +39,33 @@ void main() {
       expect(set.asIntIterable().toList(), [65537]);
     });
   });
+
+  group('CompositeSet equals and hashCode', () {
+    final oiii = CompositeSet();
+    final oioi = CompositeSet();
+    final ooio = CompositeSet();
+
+    setUp(() {
+      oiii[1] = true;
+      oiii[2] = true;
+      oiii[3] = true;
+
+      oioi[1] = true;
+      oioi[3] = true;
+
+      ooio[2] = true;
+    });
+
+    test('equals', () {
+      expect(oioi..or(ooio), equals(oiii));
+    });
+
+    test('not equals', () {
+      expect(oiii, isNot(ooio));
+    });
+
+    test('hashCode', () {
+      expect((oioi..or(ooio)).hashCode, equals(oiii.hashCode));
+    });
+  });
 }

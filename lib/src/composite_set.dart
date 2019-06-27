@@ -28,7 +28,7 @@ class BitSetChunk {
 ///
 /// By default, each chunk is using a maximum cardinality of 2^16 entries,
 /// following the RoaringBitmap pattern.
-class CompositeSet implements BitSet {
+class CompositeSet extends BitSet {
   /// The bits used for each chunk.
   final int chunkBits;
 
@@ -78,7 +78,7 @@ class CompositeSet implements BitSet {
     int j = 0;
     while (i < chunks.length && j < set.chunks.length) {
       final a = chunks[i];
-      final b = chunks[j];
+      final b = set.chunks[j];
       if (a.offset < b.offset) {
         a._set = emptyBitSet;
         i++;
@@ -104,7 +104,7 @@ class CompositeSet implements BitSet {
     int j = 0;
     while (i < chunks.length && j < set.chunks.length) {
       final a = chunks[i];
-      final b = chunks[j];
+      final b = set.chunks[j];
       if (a.offset < b.offset) {
         i++;
       } else if (a.offset > b.offset) {
@@ -160,7 +160,7 @@ class CompositeSet implements BitSet {
   }
 
   @override
-  Iterable<int> asUint64Iterable() => _toUint64Iterable(asIntIterable());
+  Iterable<int> asUint32Iterable() => _toUint32Iterable(asIntIterable());
 
   @override
   Iterable<int> asIntIterable() sync* {
