@@ -1,3 +1,9 @@
+## 2.0.0
+
+**BREAKING CHANGES**
+- Changed internal 64-bit int storage to 32-bit ints to be able to run in browsers.
+- `asUint32Iterable` instead of `asUint64Iterable`
+
 ## 1.2.0
 
 - Counter multiplication can be done with `operator *`.
