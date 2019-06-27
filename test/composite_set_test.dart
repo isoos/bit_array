@@ -38,6 +38,30 @@ void main() {
       expect(set.chunks.single.bitSet, const TypeMatcher<ListSet>());
       expect(set.asIntIterable().toList(), [65537]);
     });
+
+    test('and', () {
+      final set1 = CompositeSet()
+        ..[1] = true
+        ..[65537] = true;
+      final set2 = CompositeSet()
+        ..[1] = true
+        ..[2] = true;
+
+      set1.and(set2);
+      expect(set1.asIntIterable().toList(), [1]);
+    });
+
+    test('or', () {
+      final set1 = CompositeSet()
+        ..[1] = true
+        ..[65537] = true;
+      final set2 = CompositeSet()
+        ..[1] = true
+        ..[2] = true;
+
+      set1.or(set2);
+      expect(set1.asIntIterable().toList(), [1, 2, 65537]);
+    });
   });
 
   group('CompositeSet equals and hashCode', () {
