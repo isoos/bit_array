@@ -41,7 +41,7 @@ class CompositeSet extends BitSet {
   final int _indexMask;
   final int _offsetMask;
 
-  CompositeSet({this.chunkBits = 16, List<BitSetChunk> chunks})
+  CompositeSet({this.chunkBits = 16, List<BitSetChunk>? chunks})
       : _chunkLength = (1 << chunkBits),
         _indexMask = (1 << chunkBits) - 1,
         _offsetMask = ~((1 << chunkBits) - 1),
@@ -61,7 +61,7 @@ class CompositeSet extends BitSet {
   /// Sets the bit specified by the [index] to the [value].
   void operator []=(int index, bool value) {
     final chunkOffset = index & _offsetMask;
-    final c = _getChunk(chunkOffset, true);
+    final c = _getChunk(chunkOffset, true)!;
     c.asBitArray(_chunkLength)[index & _indexMask] = value;
   }
 
@@ -132,13 +132,13 @@ class CompositeSet extends BitSet {
   }
 
   /// Optimize the containers.
-  void optimize({BitArrayOptimizer optimizer, int removeThreshold = 0}) {
+  void optimize({BitArrayOptimizer? optimizer, int removeThreshold = 0}) {
     optimizer ??= chunkBits == 16 ? _optimizeBitArray16 : _simpleOptimizer;
     int removeCount = 0;
     for (BitSetChunk c in chunks) {
       if (c._set is BitArray) {
         final bitSet = optimizer(c._set as BitArray);
-        if (bitSet != null && bitSet is! BitArray) {
+        if (bitSet is! BitArray) {
           c._set = bitSet;
         }
       }
@@ -170,7 +170,7 @@ class CompositeSet extends BitSet {
     }
   }
 
-  BitSetChunk _getChunk(int offset, [bool forInsert = false]) {
+  BitSetChunk? _getChunk(int offset, [bool forInsert = false]) {
     int left = 0;
     int right = chunks.length - 1;
     while (left <= right) {
