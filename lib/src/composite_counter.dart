@@ -151,13 +151,11 @@ class CompositeCounter {
   CompositeSet toMask({int minValue = 1}) {
     return CompositeSet(
         chunkBits: chunkBits,
-        chunks: chunks
-            .expand<BitSetChunk>((c) {
-              final set = c.bitCounter.toMask(minValue: minValue);
-              if (set.isEmpty) return [];
-              return [BitSetChunk(c.offset, set)];
-            })
-            .toList());
+        chunks: chunks.expand<BitSetChunk>((c) {
+          final set = c.bitCounter.toMask(minValue: minValue);
+          if (set.isEmpty) return [];
+          return [BitSetChunk(c.offset, set)];
+        }).toList());
   }
 
   /// Updates the values to the maximum of the pairwise values with [other].

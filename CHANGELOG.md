@@ -1,3 +1,7 @@
+## 2.1.0
+
+- Migrated to null-safety. ([#5](https://github.com/isoos/bit_array/pull/5) by [eugmes](https://github.com/eugmes)).
+
 ## 2.0.0
 
 **BREAKING CHANGES**
