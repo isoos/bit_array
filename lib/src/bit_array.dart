@@ -20,7 +20,7 @@ class BitArray extends BitSet {
   }
 
   /// Creates a bit array using a generic bit set.
-  factory BitArray.fromBitSet(BitSet set, {int length}) {
+  factory BitArray.fromBitSet(BitSet set, {int? length}) {
     length ??= set.length;
     final setDataLength = _bufferLength32(set.length);
     final data = Uint32List(_bufferLength32(length));

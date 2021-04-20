@@ -26,7 +26,7 @@ class CompositeCounter {
   final int _indexMask;
   final int _offsetMask;
 
-  CompositeCounter({this.chunkBits = 16, List<BitCounterChunk> chunks})
+  CompositeCounter({this.chunkBits = 16, List<BitCounterChunk>? chunks})
       : _chunkLength = (1 << chunkBits),
         _indexMask = (1 << chunkBits) - 1,
         _offsetMask = ~((1 << chunkBits) - 1),
@@ -52,7 +52,7 @@ class CompositeCounter {
   /// TODO: add BigInt support.
   void operator []=(int index, int value) {
     final chunkOffset = index & _offsetMask;
-    final c = _getChunk(chunkOffset, true);
+    final c = _getChunk(chunkOffset, true)!;
     c.bitCounter[index & _indexMask] = value;
   }
 
@@ -64,7 +64,7 @@ class CompositeCounter {
       throw StateError('Only sets with the same chunkBits can be added');
     }
     for (BitSetChunk bsc in set.chunks) {
-      final c = _getChunk(bsc.offset, true);
+      final c = _getChunk(bsc.offset, true)!;
       c.bitCounter.addBitSet(bsc.bitSet, shiftLeft: shiftLeft);
     }
   }
@@ -77,7 +77,7 @@ class CompositeCounter {
       throw StateError('Only counters with the same chunkBits can be added');
     }
     for (BitCounterChunk bcc in counter.chunks) {
-      final c = _getChunk(bcc.offset, true);
+      final c = _getChunk(bcc.offset, true)!;
       c.bitCounter.addBitCounter(bcc.bitCounter, shiftLeft: shiftLeft);
     }
   }
@@ -126,7 +126,7 @@ class CompositeCounter {
   /// The increment starts at the bit position specified by [shiftLeft].
   void increment(int index, {int shiftLeft = 0}) {
     final chunkOffset = index & _offsetMask;
-    final c = _getChunk(chunkOffset, true);
+    final c = _getChunk(chunkOffset, true)!;
     c.bitCounter.increment(index & _indexMask, shiftLeft: shiftLeft);
   }
 
@@ -152,12 +152,11 @@ class CompositeCounter {
     return CompositeSet(
         chunkBits: chunkBits,
         chunks: chunks
-            .map((c) {
+            .expand<BitSetChunk>((c) {
               final set = c.bitCounter.toMask(minValue: minValue);
-              if (set.isEmpty) return null;
-              return BitSetChunk(c.offset, set);
+              if (set.isEmpty) return [];
+              return [BitSetChunk(c.offset, set)];
             })
-            .where((c) => c != null)
             .toList());
   }
 
@@ -167,7 +166,7 @@ class CompositeCounter {
       throw Exception('chunkBits must match: $chunkBits != ${other.chunkBits}');
     }
     for (BitCounterChunk oc in other.chunks) {
-      final c = _getChunk(oc.offset, true);
+      final c = _getChunk(oc.offset, true)!;
       if (c.bitCounter.bitLength == 0) {
         c.bitCounter._bits.addAll(oc.bitCounter._bits.map((a) => a.clone()));
       } else {
@@ -238,7 +237,7 @@ class CompositeCounter {
     );
   }
 
-  BitCounterChunk _getChunk(int offset, [bool forInsert = false]) {
+  BitCounterChunk? _getChunk(int offset, [bool forInsert = false]) {
     int left = 0;
     int right = chunks.length - 1;
     while (left <= right) {
