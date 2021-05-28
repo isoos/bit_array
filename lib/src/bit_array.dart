@@ -54,6 +54,9 @@ class BitArray extends BitSet {
     if (_length == value) {
       return;
     }
+    if (_bufferLength32(_length) == _bufferLength32(value)) {
+      return;
+    }
     final data = Uint32List(_bufferLength32(value));
     data.setRange(0, math.min(data.length, _data.length), _data);
     _data = data;
