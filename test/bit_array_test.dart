@@ -64,6 +64,23 @@ void main() {
           [3, 6, 9, 12, 18, 21, 24, 27, 33, 36, 39]);
     });
 
+    test('packing and unpacking', () {
+      final bitsAmount = 10000;
+      final accumulator = BitArray(0);
+      for (int i = 0; i < bitsAmount; i++) {
+        accumulator.length = i + 1;
+        if (i % 2 == 0) {
+          accumulator.setBit(i);
+        } else {
+          accumulator.clearBit(i);
+        }
+      }
+      final packed = accumulator.byteBuffer;
+      final deccumulator = BitArray.fromByteBuffer(packed);
+      for (int i = 0; i < bitsAmount; i++) {
+        expect(deccumulator[i], accumulator[i]);
+      }
+    });
     test('array ops', () {
       final oooo = BitArray(32);
       expect(oooo.toBinaryString().substring(0, 4), '0000');
