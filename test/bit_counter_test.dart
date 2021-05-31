@@ -99,6 +99,12 @@ void main() {
       expect(counter[2001], 0);
     });
 
+    test('bit sets (edge case)', () {
+      final counter = BitCounter(0);
+      counter.addBitSet(ListSet.fromSorted([0, 2, 5, 2048]));
+      expect(counter[2048], 1);
+    });
+
     test('bit set with shift', () {
       final counter = BitCounter(128);
       counter.addBitSet(ListSet.fromSorted([0, 2, 5]), shiftLeft: 3);
