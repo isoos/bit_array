@@ -19,7 +19,7 @@ abstract class BitSet {
   /// Returns an iterable wrapper that returns the content of the [BitSet] as
   /// 32-bit int blocks. Members are iterated from a zero-based index and each
   /// block contains 32 values as a bit index.
-  Iterable<int> asUint32Iterable();
+  Iterable<int> asUint8Iterable();
 
   /// Returns an iterable wrapper of the [BitSet] that iterates over the index
   /// members that are set to true.
@@ -33,8 +33,8 @@ abstract class BitSet {
     if (other is BitSet &&
         runtimeType == other.runtimeType &&
         length == other.length) {
-      final iter = asUint32Iterable().iterator;
-      final otherIter = other.asUint32Iterable().iterator;
+      final iter = asUint8Iterable().iterator;
+      final otherIter = other.asUint8Iterable().iterator;
       while (iter.moveNext() && otherIter.moveNext()) {
         if (iter.current != otherIter.current) {
           return false;
@@ -47,7 +47,7 @@ abstract class BitSet {
 
   @override
   int get hashCode =>
-      asUint32Iterable().fold(
+      asUint8Iterable().fold(
           0, (int previousValue, element) => previousValue ^ element.hashCode) ^
       length.hashCode;
 }
@@ -72,7 +72,7 @@ class EmptySet implements BitSet {
   Iterable<int> asIntIterable() => const Iterable<int>.empty();
 
   @override
-  Iterable<int> asUint32Iterable() => const Iterable<int>.empty();
+  Iterable<int> asUint8Iterable() => const Iterable<int>.empty();
 }
 
 /// Memory-efficient empty [BitSet] instance.
@@ -121,7 +121,7 @@ class ListSet extends BitSet {
   }
 
   @override
-  Iterable<int> asUint32Iterable() => _toUint32Iterable(asIntIterable());
+  Iterable<int> asUint8Iterable() => _toUint8Iterable(asIntIterable());
 
   @override
   Iterable<int> asIntIterable() => _list;
@@ -180,7 +180,7 @@ class RangeSet extends BitSet {
   }
 
   @override
-  Iterable<int> asUint32Iterable() => _toUint32Iterable(asIntIterable());
+  Iterable<int> asUint8Iterable() => _toUint8Iterable(asIntIterable());
 
   @override
   Iterable<int> asIntIterable() sync* {
@@ -194,17 +194,17 @@ class RangeSet extends BitSet {
   }
 }
 
-Iterable<int> _toUint32Iterable(Iterable<int> values) sync* {
+Iterable<int> _toUint8Iterable(Iterable<int> values) sync* {
   final iter = values.iterator;
   int blockOffset = 0;
-  int blockLast = 31;
+  int blockLast = 7;
   int block = 0;
   bool hasCurrent = iter.moveNext();
   while (hasCurrent) {
     if (block == 0 && iter.current > blockLast) {
       yield 0;
-      blockOffset += 32;
-      blockLast += 32;
+      blockOffset += 8;
+      blockLast += 8;
       continue;
     } else if (iter.current <= blockLast) {
       final offset = iter.current - blockOffset;
@@ -214,8 +214,8 @@ Iterable<int> _toUint32Iterable(Iterable<int> values) sync* {
     } else {
       yield block;
       block = 0;
-      blockOffset += 32;
-      blockLast += 32;
+      blockOffset += 8;
+      blockLast += 8;
     }
   }
   if (block != 0) {

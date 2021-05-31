@@ -2,36 +2,42 @@ part of bit_array;
 
 /// Bit array to store bits.
 class BitArray extends BitSet {
-  Uint32List _data;
+  Uint8List _data;
   int _length;
 
-  BitArray._(this._data) : _length = _data.length << 5;
+  BitArray._(this._data) : _length = _data.length << 3;
 
   /// Creates a bit array with maximum [length] items.
   ///
-  /// [length] will be rounded up to match the 32-bit boundary.
-  factory BitArray(int length) =>
-      BitArray._(Uint32List(_bufferLength32(length)));
+  /// [length] will be rounded up to match the 8-bit boundary.
+  factory BitArray(int length) => BitArray._(Uint8List(_bufferLength8(length)));
 
   /// Creates a bit array using a byte buffer.
   factory BitArray.fromByteBuffer(ByteBuffer buffer) {
-    final data = buffer.asUint32List();
+    final data = buffer.asUint8List();
+    return BitArray._(data);
+  }
+
+  /// Creates a bit array using a Uint8List.
+  factory BitArray.fromUint8List(Uint8List list) {
+    final data =
+        list.buffer.asUint8List(list.offsetInBytes, list.lengthInBytes);
     return BitArray._(data);
   }
 
   /// Creates a bit array using a generic bit set.
   factory BitArray.fromBitSet(BitSet set, {int? length}) {
     length ??= set.length;
-    final setDataLength = _bufferLength32(set.length);
-    final data = Uint32List(_bufferLength32(length));
-    data.setRange(0, setDataLength, set.asUint32Iterable());
+    final setDataLength = _bufferLength8(set.length);
+    final data = Uint8List(_bufferLength8(length));
+    data.setRange(0, setDataLength, set.asUint8Iterable());
     return BitArray._(data);
   }
 
   /// The value of the bit with the specified [index].
   @override
   bool operator [](int index) {
-    return (_data[index >> 5] & _bitMask[index & 0x1f]) != 0;
+    return (_data[index >> 3] & _bitMask[index & 0x7]) != 0;
   }
 
   /// Sets the bit specified by the [index] to the [value].
@@ -45,7 +51,7 @@ class BitArray extends BitSet {
 
   /// The number of bit in this [BitArray].
   ///
-  /// [length] will be rounded up to match the 32-bit boundary.
+  /// [length] will be rounded up to match the 8-bit boundary.
   ///
   /// The valid index values for the array are `0` through `length - 1`.
   @override
@@ -54,13 +60,13 @@ class BitArray extends BitSet {
     if (_length == value) {
       return;
     }
-    if (_bufferLength32(_length) == _bufferLength32(value)) {
+    if (_bufferLength8(_length) == _bufferLength8(value)) {
       return;
     }
-    final data = Uint32List(_bufferLength32(value));
+    final data = Uint8List(_bufferLength8(value));
     data.setRange(0, math.min(data.length, _data.length), _data);
     _data = data;
-    _length = _data.length << 5;
+    _length = _data.length << 3;
   }
 
   /// The number of bits set to true.
@@ -81,7 +87,7 @@ class BitArray extends BitSet {
 
   /// Sets the bit specified by the [index] to false.
   void clearBit(int index) {
-    _data[index >> 5] &= _clearMask[index & 0x1f];
+    _data[index >> 3] &= _clearMask[index & 0x7];
   }
 
   /// Sets the bits specified by the [indexes] to false.
@@ -98,7 +104,7 @@ class BitArray extends BitSet {
 
   /// Sets the bit specified by the [index] to true.
   void setBit(int index) {
-    _data[index >> 5] |= _bitMask[index & 0x1f];
+    _data[index >> 3] |= _bitMask[index & 0x7];
   }
 
   /// Sets the bits specified by the [indexes] to true.
@@ -134,7 +140,7 @@ class BitArray extends BitSet {
   /// corresponding elements in the specified [set].
   /// Excess size of the [set] is ignored.
   void and(BitSet set) {
-    final iter = set.asUint32Iterable().iterator;
+    final iter = set.asUint8Iterable().iterator;
     int i = 0;
     for (; i < _data.length && iter.moveNext(); i++) {
       _data[i] &= iter.current;
@@ -148,7 +154,7 @@ class BitArray extends BitSet {
   /// corresponding elements in the specified [set].
   /// Excess size of the [set] is ignored.
   void andNot(BitSet set) {
-    final iter = set.asUint32Iterable().iterator;
+    final iter = set.asUint8Iterable().iterator;
     for (int i = 0; i < _data.length && iter.moveNext(); i++) {
       _data[i] &= ~iter.current;
     }
@@ -158,7 +164,7 @@ class BitArray extends BitSet {
   /// corresponding elements in the specified [set].
   /// Excess size of the [set] is ignored.
   void or(BitSet set) {
-    final iter = set.asUint32Iterable().iterator;
+    final iter = set.asUint8Iterable().iterator;
     for (int i = 0; i < _data.length && iter.moveNext(); i++) {
       _data[i] |= iter.current;
     }
@@ -168,7 +174,7 @@ class BitArray extends BitSet {
   /// corresponding elements in the specified [set].
   /// Excess size of the [set] is ignored.
   void xor(BitSet set) {
-    final iter = set.asUint32Iterable().iterator;
+    final iter = set.asUint8Iterable().iterator;
     for (int i = 0; i < _data.length && iter.moveNext(); i++) {
       _data[i] = _data[i] ^ iter.current;
     }
@@ -177,7 +183,7 @@ class BitArray extends BitSet {
   /// Creates a copy of the current [BitArray].
   @override
   BitArray clone() {
-    final newData = Uint32List(_data.length);
+    final newData = Uint8List(_data.length);
     newData.setRange(0, _data.length, _data);
     return BitArray._(newData);
   }
@@ -216,9 +222,9 @@ class BitArray extends BitSet {
   ByteBuffer get byteBuffer => _data.buffer;
 
   /// Returns an iterable wrapper of the bit array that iterates over the index
-  /// numbers and returns the 32-bit int blocks.
+  /// numbers and returns the 8-bit int blocks.
   @override
-  Iterable<int> asUint32Iterable() => _data;
+  Iterable<int> asUint8Iterable() => _data;
 
   /// Returns an iterable wrapper of the bit array that iterates over the index
   /// numbers that match [value] (by default the bits that are set).
@@ -228,8 +234,8 @@ class BitArray extends BitSet {
   }
 }
 
-final _bitMask = List<int>.generate(32, (i) => 1 << i);
-final _clearMask = List<int>.generate(32, (i) => ~(1 << i));
+final _bitMask = List<int>.generate(8, (i) => 1 << i);
+final _clearMask = List<int>.generate(8, (i) => ~(1 << i));
 final _cardinalityBitCounts = List<int>.generate(256, _cardinalityOfByte);
 
 int _cardinalityOfByte(int value) {
@@ -254,18 +260,18 @@ class _IntIterable extends IterableBase<int> {
 }
 
 class _IntIterator implements Iterator<int> {
-  final Uint32List _buffer;
+  final Uint8List _buffer;
   final int _length;
   final bool _matchValue;
   final int _skipMatch;
-  final int _cursorMax = (1 << 31);
+  final int _cursorMax = (1 << 7);
   int _current = -1;
   int _cursor = 0;
   int _cursorByte = 0;
   int _cursorMask = 1;
 
   _IntIterator(this._buffer, this._length, this._matchValue)
-      : _skipMatch = _matchValue ? 0x00 : 0xffffffff;
+      : _skipMatch = _matchValue ? 0x00 : 0xff;
 
   @override
   int get current => _current;
@@ -276,7 +282,7 @@ class _IntIterator implements Iterator<int> {
       final value = _buffer[_cursorByte];
       if (_cursorMask == 1 && value == _skipMatch) {
         _cursorByte++;
-        _cursor += 32;
+        _cursor += 8;
         continue;
       }
       final isSet = (value & _cursorMask) != 0;
@@ -301,7 +307,7 @@ class _IntIterator implements Iterator<int> {
   }
 }
 
-int _bufferLength32(int length) {
-  final hasExtra = (length & 0x1f) != 0;
-  return (length >> 5) + (hasExtra ? 1 : 0);
+int _bufferLength8(int length) {
+  final hasExtra = (length & 0x7) != 0;
+  return (length >> 3) + (hasExtra ? 1 : 0);
 }
