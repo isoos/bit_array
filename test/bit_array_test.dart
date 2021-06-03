@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:test/test.dart';
 
 import 'package:bit_array/bit_array.dart';
@@ -81,6 +83,21 @@ void main() {
         expect(deccumulator[i], accumulator[i]);
       }
     });
+
+    test('fromUint8list', () {
+      var list = Uint8List.fromList(<int>[0xAA, 0x55, 0x1b, 0x1a]);
+      var bitArray = BitArray.fromUint8List(list);
+
+      for (int w = 0; w < 2; w++) {
+        var word = 0;
+        for (int b = 7; b >= 0; b--) {
+          word <<= 1;
+          word |= (bitArray[b + w * 8] ? 1 : 0);
+        }
+        expect(word, list[w]);
+      }
+    });
+
     test('array ops', () {
       final oooo = BitArray(32);
       expect(oooo.toBinaryString().substring(0, 4), '0000');

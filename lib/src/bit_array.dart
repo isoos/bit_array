@@ -28,6 +28,13 @@ class BitArray extends BitSet {
     return BitArray._(data);
   }
 
+  /// Creates a bit array using a Uint8List.
+  factory BitArray.fromUint8List(Uint8List list) {
+    final data =
+        list.buffer.asUint32List(list.offsetInBytes, list.lengthInBytes >> 2);
+    return BitArray._(data);
+  }
+
   /// The value of the bit with the specified [index].
   @override
   bool operator [](int index) {
