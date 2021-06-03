@@ -108,7 +108,7 @@ class ListSet extends BitSet {
   }
 
   @override
-  int get length => _list.isEmpty ? 0 : _list.last;
+  int get length => _list.isEmpty ? 0 : _list.last + 1;
 
   @override
   int get cardinality {
