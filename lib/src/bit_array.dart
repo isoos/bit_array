@@ -35,6 +35,22 @@ class BitArray extends BitSet {
     return BitArray._(data);
   }
 
+  /// Create a bit array from a binary string.
+  factory BitArray.fromString(String bitString) {
+    var data = Uint32List((bitString.length + 31) >> 5);
+    var bitIndex = 0;
+    for (var i = bitString.length - 1; i >= 0; i--) {
+      if (bitString[i] == '0') {
+        bitIndex++;
+        continue; // Nothing to do
+      }
+      var wordIndex = (bitIndex) >> 5;
+      data[wordIndex] |= 1 << (bitIndex % 32);
+      bitIndex++;
+    }
+    return BitArray._(data);
+  }
+
   /// The value of the bit with the specified [index].
   @override
   bool operator [](int index) {

@@ -98,6 +98,20 @@ void main() {
       }
     });
 
+    test('fromString', () {
+      void testBitString(String bitString) {
+        var reversedBitString = bitString.split('').reversed.join();
+        var bitArray = BitArray.fromString(bitString);
+        for (int i = 0; i < bitString.length; i++) {
+          expect(bitArray[i], reversedBitString[i] == '1');
+        }
+      }
+
+      testBitString('111010');
+      testBitString('101010010101001001000100101110');
+      testBitString('10101001011101110101110011101010110101011111110110');
+    });
+
     test('array ops', () {
       final oooo = BitArray(32);
       expect(oooo.toBinaryString().substring(0, 4), '0000');
