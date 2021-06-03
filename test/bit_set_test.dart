@@ -7,7 +7,7 @@ void main() {
     final set = ListSet.fromSorted([23, 45, 78, 98, 101, 102, 103]);
 
     test('simple values', () {
-      expect(set.length, 103);
+      expect(set.length, 104);
       expect(set.cardinality, 7);
       expect(set[22], isFalse);
       expect(set[23], isTrue);
