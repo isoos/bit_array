@@ -101,7 +101,7 @@ void main() {
     test('fromString', () {
       void testBitString(String bitString) {
         var reversedBitString = bitString.split('').reversed.join();
-        var bitArray = BitArray.fromString(bitString);
+        var bitArray = BitArray.parseBinary(bitString);
         for (int i = 0; i < bitString.length; i++) {
           expect(bitArray[i], reversedBitString[i] == '1');
         }
