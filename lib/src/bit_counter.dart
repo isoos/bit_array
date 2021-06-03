@@ -71,9 +71,8 @@ class BitCounter {
   ///
   /// The add starts at the bit position specified by [shiftLeft].
   void addBitSet(BitSet set, {int shiftLeft = 0}) {
-    // From last bit index to bit array length: +1
-    if (_length < set.length + 1) {
-      _length = set.length + 1;
+    if (_length < set.length) {
+      _length = set.length;
       _bits.forEach((a) => a.length = _length);
     }
     for (int i = _bits.length; i < shiftLeft; i++) {
