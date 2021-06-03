@@ -28,6 +28,35 @@ class BitArray extends BitSet {
     return BitArray._(data);
   }
 
+  /// Creates a bit array using a Uint8List.
+  factory BitArray.fromUint8List(Uint8List list) {
+    if (list.lengthInBytes % 4 != 0) {
+      throw FormatException('Uint8List length must be a multiplication of 4');
+    }
+    final data =
+        list.buffer.asUint32List(list.offsetInBytes, list.lengthInBytes >> 2);
+    return BitArray._(data);
+  }
+
+  /// Create a bit array from a binary string.
+  factory BitArray.parseBinary(String bitString) {
+    var data = Uint32List((bitString.length + 31) >> 5);
+    var bitIndex = 0;
+    for (var i = bitString.length - 1; i >= 0; i--) {
+      if (bitString[i] == '0') {
+        bitIndex++;
+        // Nothing to do
+      } else if (bitString[i] == '1') {
+        var wordIndex = (bitIndex) >> 5;
+        data[wordIndex] |= 1 << (bitIndex % 32);
+        bitIndex++;
+      } else {
+        throw FormatException('Binary string should consist of 0s and 1s only');
+      }
+    }
+    return BitArray._(data);
+  }
+
   /// The value of the bit with the specified [index].
   @override
   bool operator [](int index) {
