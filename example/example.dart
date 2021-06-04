@@ -1,6 +1,6 @@
 import 'package:bit_array/bit_array.dart';
 
-main() {
+void main() {
   final array = BitArray(1024);
   array[12] = true;
   array.setBit(123);

@@ -18,8 +18,8 @@ class BitCounter {
   /// The lowest 63-bit integer value at the given [index].
   /// TODO: add BigInt support.
   int operator [](int index) {
-    int count = 0;
-    for (int i = 0; i < _bits.length && i < 63; i++) {
+    var count = 0;
+    for (var i = 0; i < _bits.length && i < 63; i++) {
       if (_bits[i][index]) {
         count |= (1 << i);
       }
@@ -30,7 +30,7 @@ class BitCounter {
   /// Sets the lowest 63-bit integer value at the given [index].
   /// TODO: add BigInt support.
   void operator []=(int index, int value) {
-    int pos = 0;
+    var pos = 0;
     while (value > 0) {
       BitArray array;
       if (_bits.length == pos) {
@@ -51,7 +51,7 @@ class BitCounter {
   /// Returns the binary string representation of the count at the given [index].
   String toBinaryString(int index) {
     final sb = StringBuffer();
-    for (int i = _bits.length - 1; i >= 0; i--) {
+    for (var i = _bits.length - 1; i >= 0; i--) {
       final value = _bits[i][index];
       if (sb.isEmpty && !value) continue;
       sb.write(value ? '1' : '0');
@@ -75,15 +75,15 @@ class BitCounter {
       _length = set.length;
       _bits.forEach((a) => a.length = _length);
     }
-    for (int i = _bits.length; i < shiftLeft; i++) {
+    for (var i = _bits.length; i < shiftLeft; i++) {
       _bits.add(BitArray(_length));
     }
     final arrayDataLength = _bufferLength32(_length);
     final iterator = set.asUint32Iterable().iterator;
-    for (int i = 0; i < arrayDataLength && iterator.moveNext(); i++) {
-      int overflow = iterator.current;
+    for (var i = 0; i < arrayDataLength && iterator.moveNext(); i++) {
+      var overflow = iterator.current;
 
-      for (int pos = shiftLeft; overflow != 0; pos++) {
+      for (var pos = shiftLeft; overflow != 0; pos++) {
         BitArray counter;
         if (_bits.length == pos) {
           counter = BitArray(_length);
@@ -103,7 +103,7 @@ class BitCounter {
   ///
   /// The add starts at the bit position specified by [shiftLeft].
   void addBitCounter(BitCounter counter, {int shiftLeft = 0}) {
-    for (int i = 0; i < counter.bitLength; i++) {
+    for (var i = 0; i < counter.bitLength; i++) {
       addBitSet(counter.bits[i], shiftLeft: shiftLeft + i);
     }
   }
@@ -112,10 +112,10 @@ class BitCounter {
   ///
   /// The increment starts at the bit position specified by [shiftLeft].
   void increment(int index, {int shiftLeft = 0}) {
-    for (int i = _bits.length; i < shiftLeft; i++) {
+    for (var i = _bits.length; i < shiftLeft; i++) {
       _bits.add(BitArray(_length));
     }
-    for (int pos = shiftLeft;; pos++) {
+    for (var pos = shiftLeft;; pos++) {
       BitArray counter;
       if (_bits.length == pos) {
         counter = BitArray(_length);
@@ -136,7 +136,7 @@ class BitCounter {
   /// Multiply this instance with [value] and return the result.
   BitCounter multiply(int value) {
     final result = BitCounter(_length);
-    int shiftLeft = 0;
+    var shiftLeft = 0;
     while (value > 0) {
       final bit = value & 0x01;
       if (bit == 1) {
@@ -151,8 +151,8 @@ class BitCounter {
   /// Multiply this instance with [counter] and return the result.
   BitCounter multiplyWithCounter(BitCounter counter) {
     final result = BitCounter(math.min(_length, counter._length));
-    for (int i = 0; i < bitLength; i++) {
-      for (int j = 0; j < counter.bitLength; j++) {
+    for (var i = 0; i < bitLength; i++) {
+      for (var j = 0; j < counter.bitLength; j++) {
         final ba = _bits[i].clone()..and(counter._bits[j]);
         result.addBitSet(ba, shiftLeft: i + j);
       }
@@ -196,7 +196,7 @@ class BitCounter {
     if (bitLength == 0) return BitArray(0);
     if (minValue == 1) {
       final r = _bits[0].clone();
-      for (int i = 1; i < bitLength; i++) {
+      for (var i = 1; i < bitLength; i++) {
         r.or(_bits[i]);
       }
       return r;
@@ -211,9 +211,9 @@ class BitCounter {
       final r = BitArray(_length);
       final bl = math.max(bitLength, other.length);
       final dataLength = _bits[0]._data.length;
-      for (int i = 0; i < dataLength; i++) {
-        int ub = -1;
-        for (int j = 0; j < bl; j++) {
+      for (var i = 0; i < dataLength; i++) {
+        var ub = -1;
+        for (var j = 0; j < bl; j++) {
           final av = j >= bitLength ? 0 : bits[j]._data[i];
           final bv = j >= other.length ? 0 : other[j];
 
@@ -243,9 +243,9 @@ class BitCounter {
       _bits.add(BitArray(_length));
     }
     final dataLength = _bits[0]._data.length;
-    for (int i = 0; i < dataLength; i++) {
-      int ua = -1;
-      for (int j = 0; j < bitLength; j++) {
+    for (var i = 0; i < dataLength; i++) {
+      var ua = -1;
+      for (var j = 0; j < bitLength; j++) {
         final av = bits[j]._data[i];
         final bv = j >= other.bitLength ? 0 : other.bits[j]._data[i];
 
@@ -253,7 +253,7 @@ class BitCounter {
         final bg = bv & (~av);
         ua = ag | (ua & (~bg));
       }
-      for (int j = 0; j < bitLength; j++) {
+      for (var j = 0; j < bitLength; j++) {
         final av = bits[j]._data[i];
         final bv = j >= other.bitLength ? 0 : other.bits[j]._data[i];
         _bits[j]._data[i] = (ua & av) | ((~ua) & bv);
@@ -277,9 +277,9 @@ class BitCounter {
     }
     final mbl = math.max(bitLength, other.bitLength);
     final dataLength = _bits[0]._data.length;
-    for (int i = 0; i < dataLength; i++) {
-      int ub = -1;
-      for (int j = 0; j < mbl; j++) {
+    for (var i = 0; i < dataLength; i++) {
+      var ub = -1;
+      for (var j = 0; j < mbl; j++) {
         final av = j >= bitLength ? 0 : bits[j]._data[i];
         final bv = j >= other.bitLength ? 0 : other.bits[j]._data[i];
 
@@ -287,7 +287,7 @@ class BitCounter {
         final bg = bv & (~av);
         ub = ag | (ub & (~bg));
       }
-      for (int j = 0; j < bitLength; j++) {
+      for (var j = 0; j < bitLength; j++) {
         final av = bits[j]._data[i];
         final bv = j >= other.bitLength ? 0 : other.bits[j]._data[i];
         _bits[j]._data[i] = (ub & bv) | ((~ub) & av);
@@ -308,15 +308,15 @@ class BitCounter {
     if (bitLength == 0) return;
     final dataLength = _bits.first._data.length;
     final iter = set.asUint32Iterable().iterator;
-    int i = 0;
+    var i = 0;
     for (; i < dataLength && iter.moveNext(); i++) {
       final cv = iter.current;
-      for (int j = 0; j < _bits.length; j++) {
+      for (var j = 0; j < _bits.length; j++) {
         _bits[j]._data[i] &= cv;
       }
     }
     for (; i < dataLength; i++) {
-      for (int j = 0; j < _bits.length; j++) {
+      for (var j = 0; j < _bits.length; j++) {
         _bits[j]._data[i] = 0;
       }
     }
@@ -330,7 +330,7 @@ class BitCounter {
   /// The cloned instance starts at the bit position specified by [shiftRight].
   BitCounter clone({int shiftRight = 0}) {
     final c = BitCounter(_length);
-    for (int i = shiftRight; i < bitLength; i++) {
+    for (var i = shiftRight; i < bitLength; i++) {
       c._bits.add(_bits[i].clone());
     }
     return c;

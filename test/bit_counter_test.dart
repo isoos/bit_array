@@ -8,13 +8,13 @@ void main() {
   group('BitCounter', () {
     test('set and get values', () {
       final counter = BitCounter(128);
-      for (int c = 0; c < 128; c++) {
+      for (var c = 0; c < 128; c++) {
         expect(counter[c], 0);
-        for (int i = 0; i < 1024; i++) {
+        for (var i = 0; i < 1024; i++) {
           counter[c] = i;
           expect(counter[c], i);
         }
-        for (int i = 1024; i >= 0; i--) {
+        for (var i = 1024; i >= 0; i--) {
           counter[c] = i;
           expect(counter[c], i);
         }
@@ -24,13 +24,13 @@ void main() {
 
     test('increment value', () {
       final counter = BitCounter(128);
-      for (int c = 0; c < 128; c++) {
-        for (int i = 1; i < 1024; i++) {
+      for (var c = 0; c < 128; c++) {
+        for (var i = 1; i < 1024; i++) {
           counter.increment(c);
           expect(counter[c], i);
         }
         counter[c] = 0;
-        for (int i = 1; i < 1024; i++) {
+        for (var i = 1; i < 1024; i++) {
           counter.increment(c);
           expect(counter[c], i);
         }
@@ -68,14 +68,14 @@ void main() {
 
     test('complex bit arrays', () {
       final counter = BitCounter(1024);
-      for (int i = 1; i < 1024; i++) {
+      for (var i = 1; i < 1024; i++) {
         final array = BitArray(1024)..setBit(i);
-        for (int j = 0; j < i; j++) {
+        for (var j = 0; j < i; j++) {
           counter.addBitArray(array);
         }
       }
       expect(counter.bitLength, 10);
-      for (int i = 0; i < 1024; i++) {
+      for (var i = 0; i < 1024; i++) {
         expect(counter[i], i);
       }
     });
@@ -116,14 +116,14 @@ void main() {
 
     test('multiply', () {
       final c1 = BitCounter(128);
-      for (int i = 0; i < 128; i++) {
+      for (var i = 0; i < 128; i++) {
         c1[i] = i;
       }
       final c3 = c1 * 5;
       expect(c3[0], 0);
       expect(c3[10], 50);
       expect(c3[98], 490);
-      for (int i = 0; i < 128; i++) {
+      for (var i = 0; i < 128; i++) {
         final exp = i * 5;
         expect('$i-${c3[i]}', '$i-$exp');
       }
@@ -134,7 +134,7 @@ void main() {
     test('multiplyWithCounter', () {
       final c1 = BitCounter(128);
       final c2 = BitCounter(128);
-      for (int i = 0; i < 128; i++) {
+      for (var i = 0; i < 128; i++) {
         c1[i] = i;
         c2[i] = (i % 17) + (i % 3);
       }
@@ -142,7 +142,7 @@ void main() {
       expect(c3[0], 0);
       expect(c3[10], 110);
       expect(c3[98], 1470);
-      for (int i = 0; i < 128; i++) {
+      for (var i = 0; i < 128; i++) {
         final exp = i * ((i % 17) + (i % 3));
         expect('$i-${c3[i]}', '$i-$exp');
       }
@@ -153,7 +153,7 @@ void main() {
 
     test('toMask', () {
       final c = BitCounter(128);
-      for (int i = 0; i < 128; i++) {
+      for (var i = 0; i < 128; i++) {
         c[i] = (i % 7) + (i % 3);
       }
       final b1 = c.toMask();
@@ -210,7 +210,7 @@ void main() {
     test('min/max', () {
       final c1 = BitCounter(128);
       final c2 = BitCounter(128);
-      for (int i = 0; i < 128; i++) {
+      for (var i = 0; i < 128; i++) {
         c1[i] = i;
         c2[i] = (i % 17) + (i % 23);
       }
@@ -222,7 +222,7 @@ void main() {
       expect(cmax[16], 32);
       expect(cmax[18], 19);
       expect(cmax[100], 100);
-      for (int i = 0; i < 128; i++) {
+      for (var i = 0; i < 128; i++) {
         final v2 = (i % 17) + (i % 23);
         expect('$i-${cmin[i]}', '$i-${min(i, v2)}');
         expect('$i-${cmax[i]}', '$i-${max(i, v2)}');
@@ -233,7 +233,7 @@ void main() {
 
     test('and', () {
       final c1 = BitCounter(128);
-      for (int i = 0; i < 128; i++) {
+      for (var i = 0; i < 128; i++) {
         c1[i] = i;
       }
       c1.applyMask(ListSet.fromSorted([3, 100]));

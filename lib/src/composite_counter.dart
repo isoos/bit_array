@@ -63,7 +63,7 @@ class CompositeCounter {
     if (set.chunkBits != chunkBits) {
       throw StateError('Only sets with the same chunkBits can be added');
     }
-    for (BitSetChunk bsc in set.chunks) {
+    for (var bsc in set.chunks) {
       final c = _getChunk(bsc.offset, true)!;
       c.bitCounter.addBitSet(bsc.bitSet, shiftLeft: shiftLeft);
     }
@@ -76,7 +76,7 @@ class CompositeCounter {
     if (counter.chunkBits != chunkBits) {
       throw StateError('Only counters with the same chunkBits can be added');
     }
-    for (BitCounterChunk bcc in counter.chunks) {
+    for (var bcc in counter.chunks) {
       final c = _getChunk(bcc.offset, true)!;
       c.bitCounter.addBitCounter(bcc.bitCounter, shiftLeft: shiftLeft);
     }
@@ -99,7 +99,7 @@ class CompositeCounter {
           'Only counters with the same chunkBits can be multiplied');
     }
     final result = CompositeCounter(chunkBits: counter.chunkBits);
-    for (BitCounterChunk bcc in counter.chunks) {
+    for (var bcc in counter.chunks) {
       final c = _getChunk(bcc.offset);
       if (c == null) continue;
       final m = c.bitCounter * bcc.bitCounter;
@@ -163,7 +163,7 @@ class CompositeCounter {
     if (chunkBits != other.chunkBits) {
       throw Exception('chunkBits must match: $chunkBits != ${other.chunkBits}');
     }
-    for (BitCounterChunk oc in other.chunks) {
+    for (var oc in other.chunks) {
       final c = _getChunk(oc.offset, true)!;
       if (c.bitCounter.bitLength == 0) {
         c.bitCounter._bits.addAll(oc.bitCounter._bits.map((a) => a.clone()));
@@ -185,7 +185,7 @@ class CompositeCounter {
       chunks.removeLast();
     }
     final newChunks = <BitCounterChunk>[];
-    for (BitCounterChunk oc in other.chunks) {
+    for (var oc in other.chunks) {
       final c = _getChunk(oc.offset, false);
       if (c == null) continue;
       c.bitCounter.min(oc.bitCounter);
@@ -211,7 +211,7 @@ class CompositeCounter {
       chunks.removeLast();
     }
     final newChunks = <BitCounterChunk>[];
-    for (BitSetChunk oc in set.chunks) {
+    for (var oc in set.chunks) {
       final c = _getChunk(oc.offset, false);
       if (c == null) continue;
       c.bitCounter.applyMask(oc.bitSet);
@@ -236,8 +236,8 @@ class CompositeCounter {
   }
 
   BitCounterChunk? _getChunk(int offset, [bool forInsert = false]) {
-    int left = 0;
-    int right = chunks.length - 1;
+    var left = 0;
+    var right = chunks.length - 1;
     while (left <= right) {
       final mid = (left + right) >> 1;
       final value = chunks[mid];

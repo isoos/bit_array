@@ -3,7 +3,7 @@ part of bit_array;
 /// Optimizes the [BitArray] into a representation that takes less memory.
 /// May return the same [array] instance or null to indicate that there is no
 /// optimized version for it.
-typedef BitSet BitArrayOptimizer(BitArray array);
+typedef BitArrayOptimizer = BitSet Function(BitArray array);
 
 /// A container for offset-based [BitSet].
 class BitSetChunk {
@@ -74,8 +74,8 @@ class CompositeSet extends BitSet {
       chunks.fold<int>(0, (sum, c) => sum + c.bitSet.cardinality);
 
   void and(CompositeSet set) {
-    int i = 0;
-    int j = 0;
+    var i = 0;
+    var j = 0;
     while (i < chunks.length && j < set.chunks.length) {
       final a = chunks[i];
       final b = set.chunks[j];
@@ -100,8 +100,8 @@ class CompositeSet extends BitSet {
   }
 
   void or(CompositeSet set) {
-    int i = 0;
-    int j = 0;
+    var i = 0;
+    var j = 0;
     while (i < chunks.length && j < set.chunks.length) {
       final a = chunks[i];
       final b = set.chunks[j];
@@ -134,8 +134,8 @@ class CompositeSet extends BitSet {
   /// Optimize the containers.
   void optimize({BitArrayOptimizer? optimizer, int removeThreshold = 0}) {
     optimizer ??= chunkBits == 16 ? _optimizeBitArray16 : _simpleOptimizer;
-    int removeCount = 0;
-    for (BitSetChunk c in chunks) {
+    var removeCount = 0;
+    for (var c in chunks) {
       if (c._set is BitArray) {
         final bitSet = optimizer(c._set as BitArray);
         if (bitSet is! BitArray) {
@@ -164,15 +164,15 @@ class CompositeSet extends BitSet {
 
   @override
   Iterable<int> asIntIterable() sync* {
-    for (int i = 0; i < chunks.length; i++) {
+    for (var i = 0; i < chunks.length; i++) {
       final c = chunks[i];
       yield* c.bitSet.asIntIterable().map((i) => i + c.offset);
     }
   }
 
   BitSetChunk? _getChunk(int offset, [bool forInsert = false]) {
-    int left = 0;
-    int right = chunks.length - 1;
+    var left = 0;
+    var right = chunks.length - 1;
     while (left <= right) {
       final mid = (left + right) >> 1;
       final value = chunks[mid];

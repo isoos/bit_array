@@ -120,7 +120,7 @@ class BitArray extends BitSet {
 
   /// Sets all of the bits in the current [BitArray] to false.
   void clearAll() {
-    for (int i = 0; i < _data.length; i++) {
+    for (var i = 0; i < _data.length; i++) {
       _data[i] = 0;
     }
   }
@@ -137,7 +137,7 @@ class BitArray extends BitSet {
 
   /// Sets all the bit values in the current [BitArray] to true.
   void setAll() {
-    for (int i = 0; i < _data.length; i++) {
+    for (var i = 0; i < _data.length; i++) {
       _data[i] = -1;
     }
   }
@@ -154,7 +154,7 @@ class BitArray extends BitSet {
 
   /// Inverts all the bit values in the current [BitArray].
   void invertAll() {
-    for (int i = 0; i < _data.length; i++) {
+    for (var i = 0; i < _data.length; i++) {
       _data[i] = ~(_data[i]);
     }
   }
@@ -164,7 +164,7 @@ class BitArray extends BitSet {
   /// Excess size of the [set] is ignored.
   void and(BitSet set) {
     final iter = set.asUint32Iterable().iterator;
-    int i = 0;
+    var i = 0;
     for (; i < _data.length && iter.moveNext(); i++) {
       _data[i] &= iter.current;
     }
@@ -178,7 +178,7 @@ class BitArray extends BitSet {
   /// Excess size of the [set] is ignored.
   void andNot(BitSet set) {
     final iter = set.asUint32Iterable().iterator;
-    for (int i = 0; i < _data.length && iter.moveNext(); i++) {
+    for (var i = 0; i < _data.length && iter.moveNext(); i++) {
       _data[i] &= ~iter.current;
     }
   }
@@ -188,7 +188,7 @@ class BitArray extends BitSet {
   /// Excess size of the [set] is ignored.
   void or(BitSet set) {
     final iter = set.asUint32Iterable().iterator;
-    for (int i = 0; i < _data.length && iter.moveNext(); i++) {
+    for (var i = 0; i < _data.length && iter.moveNext(); i++) {
       _data[i] |= iter.current;
     }
   }
@@ -198,7 +198,7 @@ class BitArray extends BitSet {
   /// Excess size of the [set] is ignored.
   void xor(BitSet set) {
     final iter = set.asUint32Iterable().iterator;
-    for (int i = 0; i < _data.length && iter.moveNext(); i++) {
+    for (var i = 0; i < _data.length && iter.moveNext(); i++) {
       _data[i] = _data[i] ^ iter.current;
     }
   }
@@ -234,7 +234,7 @@ class BitArray extends BitSet {
   /// Creates a string of 0s and 1s of the content of the array.
   String toBinaryString() {
     final sb = StringBuffer();
-    for (int i = 0; i < length; i++) {
+    for (var i = 0; i < length; i++) {
       sb.write(this[i] ? '1' : '0');
     }
     return sb.toString();
@@ -262,7 +262,7 @@ final _clearMask = List<int>.generate(32, (i) => ~(1 << i));
 final _cardinalityBitCounts = List<int>.generate(256, _cardinalityOfByte);
 
 int _cardinalityOfByte(int value) {
-  int result = 0;
+  var result = 0;
   while (value > 0) {
     if (value & 0x01 != 0) {
       result++;

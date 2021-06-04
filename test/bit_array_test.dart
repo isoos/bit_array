@@ -8,7 +8,7 @@ void main() {
   group('BitArray', () {
     test('simple values', () {
       final array = BitArray(1024);
-      for (int i = 0; i < 1024; i++) {
+      for (var i = 0; i < 1024; i++) {
         expect(array[i], isFalse);
         expect(array.cardinality, 0);
         array[i] = true;
@@ -34,7 +34,7 @@ void main() {
       expect(array.cardinality, 2);
       expect(array.asIntIterable().toList(), [3, 333]);
 
-      for (int i = 0; i < 1000000; i++) {
+      for (var i = 0; i < 1000000; i++) {
         if (i % 3 == 0) {
           array.setBit(i);
         }
@@ -43,7 +43,7 @@ void main() {
       expect(array.cardinality, 333334);
       expect(array.asIntIterable().length, 333334);
 
-      for (int i = 0; i < 1000000; i++) {
+      for (var i = 0; i < 1000000; i++) {
         if (i % 5 == 0) {
           array.invertBit(i);
         }
@@ -53,7 +53,7 @@ void main() {
       expect(array.cardinality, 400000);
       expect(array.asIntIterable().length, 400000);
 
-      for (int i = 0; i < 1000000; i++) {
+      for (var i = 0; i < 1000000; i++) {
         if (i % 5 == 0) {
           array.clearBit(i);
         }
@@ -69,7 +69,7 @@ void main() {
     test('packing and unpacking', () {
       final bitsAmount = 10000;
       final accumulator = BitArray(0);
-      for (int i = 0; i < bitsAmount; i++) {
+      for (var i = 0; i < bitsAmount; i++) {
         accumulator.length = i + 1;
         if (i % 2 == 0) {
           accumulator.setBit(i);
@@ -79,7 +79,7 @@ void main() {
       }
       final packed = accumulator.byteBuffer;
       final deccumulator = BitArray.fromByteBuffer(packed);
-      for (int i = 0; i < bitsAmount; i++) {
+      for (var i = 0; i < bitsAmount; i++) {
         expect(deccumulator[i], accumulator[i]);
       }
     });
@@ -88,9 +88,9 @@ void main() {
       var list = Uint8List.fromList(<int>[0xAA, 0x55, 0x1b, 0x1a]);
       var bitArray = BitArray.fromUint8List(list);
 
-      for (int w = 0; w < 2; w++) {
+      for (var w = 0; w < 2; w++) {
         var word = 0;
-        for (int b = 7; b >= 0; b--) {
+        for (var b = 7; b >= 0; b--) {
           word <<= 1;
           word |= (bitArray[b + w * 8] ? 1 : 0);
         }
@@ -102,7 +102,7 @@ void main() {
       void testBitString(String bitString) {
         var reversedBitString = bitString.split('').reversed.join();
         var bitArray = BitArray.parseBinary(bitString);
-        for (int i = 0; i < bitString.length; i++) {
+        for (var i = 0; i < bitString.length; i++) {
           expect(bitArray[i], reversedBitString[i] == '1');
         }
       }

@@ -91,8 +91,8 @@ class ListSet extends BitSet {
 
   @override
   bool operator [](int index) {
-    int left = 0;
-    int right = _list.length - 1;
+    var left = 0;
+    var right = _list.length - 1;
     while (left <= right) {
       final mid = (left + right) >> 1;
       final value = _list[mid];
@@ -140,8 +140,8 @@ class RangeSet extends BitSet {
 
   @override
   bool operator [](int index) {
-    int left = 0;
-    int right = (_list.length >> 1) - 1;
+    var left = 0;
+    var right = (_list.length >> 1) - 1;
     while (left <= right) {
       final mid = (left + right) >> 1;
       final midIndex = mid << 1;
@@ -167,8 +167,8 @@ class RangeSet extends BitSet {
 
   @override
   int get cardinality {
-    int value = _list.length >> 1;
-    for (int i = 1; i < _list.length; i += 2) {
+    var value = _list.length >> 1;
+    for (var i = 1; i < _list.length; i += 2) {
       value += _list[i];
     }
     return value;
@@ -184,9 +184,9 @@ class RangeSet extends BitSet {
 
   @override
   Iterable<int> asIntIterable() sync* {
-    for (int i = 0; i < _list.length; i += 2) {
-      int value = _list[i];
-      for (int j = _list[i + 1]; j >= 0; j--) {
+    for (var i = 0; i < _list.length; i += 2) {
+      var value = _list[i];
+      for (var j = _list[i + 1]; j >= 0; j--) {
         yield value;
         value++;
       }
@@ -196,10 +196,10 @@ class RangeSet extends BitSet {
 
 Iterable<int> _toUint32Iterable(Iterable<int> values) sync* {
   final iter = values.iterator;
-  int blockOffset = 0;
-  int blockLast = 31;
-  int block = 0;
-  bool hasCurrent = iter.moveNext();
+  var blockOffset = 0;
+  var blockLast = 31;
+  var block = 0;
+  var hasCurrent = iter.moveNext();
   while (hasCurrent) {
     if (block == 0 && iter.current > blockLast) {
       yield 0;
