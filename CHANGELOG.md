@@ -1,3 +1,8 @@
+## 2.2.0
+
+- Support `BitArray` constructing from `Uint8List` and parsing from binary strings. ([#12](https://github.com/isoos/bit_array/pull/12) by [yanivshaked](https://github.com/yanivshaked)).
+- Fix `BitSet` highest index. ([#10](https://github.com/isoos/bit_array/pull/10) by [yanivshaked](https://github.com/yanivshaked)).
+
 ## 2.1.0
 
 - Migrated to null-safety. ([#5](https://github.com/isoos/bit_array/pull/5) by [eugmes](https://github.com/eugmes)).
