@@ -1,6 +1,5 @@
-import 'package:test/test.dart';
-
 import 'package:bit_array/bit_array.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('CompositeCounter', () {
