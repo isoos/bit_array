@@ -1,4 +1,4 @@
-part of bit_array;
+part of '../bit_array.dart';
 
 /// A range-encoded bit counter.
 class BitCounter {
@@ -73,7 +73,9 @@ class BitCounter {
   void addBitSet(BitSet set, {int shiftLeft = 0}) {
     if (_length < set.length) {
       _length = set.length;
-      _bits.forEach((a) => a.length = _length);
+      for (final a in _bits) {
+        a.length = _length;
+      }
     }
     for (var i = _bits.length; i < shiftLeft; i++) {
       _bits.add(BitArray(_length));

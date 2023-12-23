@@ -1,4 +1,4 @@
-part of bit_array;
+part of '../bit_array.dart';
 
 /// Bit array to store bits.
 class BitArray extends BitSet {

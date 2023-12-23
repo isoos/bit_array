@@ -1,4 +1,4 @@
-include: package:pedantic/analysis_options.yaml
+include: package:lints/recommended.yaml
 
 analyzer:
   strong-mode:
@@ -13,10 +13,9 @@ linter:
   rules:
     - annotate_overrides
     - cancel_subscriptions
+    - collection_methods_unrelated_type
     - directives_ordering
     - hash_and_equals
-    - iterable_contains_unrelated_type
-    - list_remove_unrelated_type
     - test_types_in_equals
     - unnecessary_brace_in_string_interps
     - unnecessary_const

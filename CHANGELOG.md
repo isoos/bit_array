@@ -1,3 +1,7 @@
+## 2.2.1
+
+- Updated and fixed lints.
+
 ## 2.2.0
 
 - Support `BitArray` constructing from `Uint8List` and parsing from binary strings. ([#12](https://github.com/isoos/bit_array/pull/12) by [yanivshaked](https://github.com/yanivshaked)).

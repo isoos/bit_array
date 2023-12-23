@@ -1,4 +1,4 @@
-part of bit_array;
+part of '../bit_array.dart';
 
 /// Optimizes the [BitArray] into a representation that takes less memory.
 /// May return the same [array] instance or null to indicate that there is no

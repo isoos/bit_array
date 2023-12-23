@@ -1,4 +1,4 @@
-part of bit_array;
+part of '../bit_array.dart';
 
 /// An integer-indexed collection to test membership status.
 abstract class BitSet {

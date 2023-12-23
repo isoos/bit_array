@@ -1,4 +1,4 @@
-part of bit_array;
+part of '../bit_array.dart';
 
 /// A container for offset-based [BitSet].
 class BitCounterChunk {
@@ -133,17 +133,17 @@ class CompositeCounter {
   /// Add [bits] cleared bits to the lower binary digits.
   void shiftLeft(int bits) {
     if (bits <= 0) return;
-    chunks.forEach((c) {
+    for (final c in chunks) {
       c.bitCounter.shiftLeft(bits);
-    });
+    }
   }
 
   /// Remove [bits] lower binary digits.
   void shiftRight(int bits) {
     if (bits <= 0) return;
-    chunks.forEach((c) {
+    for (final c in chunks) {
       c.bitCounter.shiftRight(bits);
-    });
+    }
   }
 
   /// Returns a [CompositeSet] which is true for every position where the
