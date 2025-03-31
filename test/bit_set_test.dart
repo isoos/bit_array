@@ -41,18 +41,24 @@ void main() {
     });
 
     test('values around 200', () {
-      expect(ListSet.fromSorted([199]).asUint32Iterable().toList(),
-          [0, 0, 0, 0, 0, 0, 128]);
-      expect(ListSet.fromSorted([200]).asUint32Iterable().toList(),
-          [0, 0, 0, 0, 0, 0, 256]);
-      expect(ListSet.fromSorted([201]).asUint32Iterable().toList(),
-          [0, 0, 0, 0, 0, 0, 512]);
-      expect(ListSet.fromSorted([2, 199]).asUint32Iterable().toList(),
-          [4, 0, 0, 0, 0, 0, 128]);
-      expect(ListSet.fromSorted([2, 200]).asUint32Iterable().toList(),
-          [4, 0, 0, 0, 0, 0, 256]);
-      expect(ListSet.fromSorted([2, 201]).asUint32Iterable().toList(),
-          [4, 0, 0, 0, 0, 0, 512]);
+      expect(ListSet.fromSorted([199]).asUint32Iterable().toList(), [
+        0, 0, 0, 0, 0, 0, 128, //
+      ]);
+      expect(ListSet.fromSorted([200]).asUint32Iterable().toList(), [
+        0, 0, 0, 0, 0, 0, 256, //
+      ]);
+      expect(ListSet.fromSorted([201]).asUint32Iterable().toList(), [
+        0, 0, 0, 0, 0, 0, 512, //
+      ]);
+      expect(ListSet.fromSorted([2, 199]).asUint32Iterable().toList(), [
+        4, 0, 0, 0, 0, 0, 128, //
+      ]);
+      expect(ListSet.fromSorted([2, 200]).asUint32Iterable().toList(), [
+        4, 0, 0, 0, 0, 0, 256, //
+      ]);
+      expect(ListSet.fromSorted([2, 201]).asUint32Iterable().toList(), [
+        4, 0, 0, 0, 0, 0, 512, //
+      ]);
     });
   });
 
@@ -66,8 +72,10 @@ void main() {
     });
 
     test('hashCode', () {
-      expect(ListSet.fromSorted([1, 3]).hashCode,
-          equals(ListSet.fromSorted([1, 3]).hashCode));
+      expect(
+        ListSet.fromSorted([1, 3]).hashCode,
+        equals(ListSet.fromSorted([1, 3]).hashCode),
+      );
     });
   });
 
@@ -102,27 +110,30 @@ void main() {
     });
 
     test('uint32', () {
-      _testUint32(set, [
-        '0010001111000001',
-        '1100011111000000',
-      ]);
+      _testUint32(set, ['0010001111000001', '1100011111000000']);
     });
   });
 
   group('RangeSet equals and hashCode', () {
     test('equals', () {
-      expect(RangeSet.fromSortedRangeLength([1, 3]),
-          equals(RangeSet.fromSortedRangeLength([1, 2, 4, 0])));
+      expect(
+        RangeSet.fromSortedRangeLength([1, 3]),
+        equals(RangeSet.fromSortedRangeLength([1, 2, 4, 0])),
+      );
     });
 
     test('not equals', () {
-      expect(RangeSet.fromSortedRangeLength([1, 3]),
-          isNot(RangeSet.fromSortedRangeLength([1, 2])));
+      expect(
+        RangeSet.fromSortedRangeLength([1, 3]),
+        isNot(RangeSet.fromSortedRangeLength([1, 2])),
+      );
     });
 
     test('hashCode', () {
-      expect(RangeSet.fromSortedRangeLength([1, 3]).hashCode,
-          equals(RangeSet.fromSortedRangeLength([1, 2, 4, 0]).hashCode));
+      expect(
+        RangeSet.fromSortedRangeLength([1, 3]).hashCode,
+        equals(RangeSet.fromSortedRangeLength([1, 2, 4, 0]).hashCode),
+      );
     });
   });
 }
@@ -130,14 +141,12 @@ void main() {
 String _rev(String s) => String.fromCharCodes(s.codeUnits.reversed);
 
 void _testUint32(BitSet set, List<String> expected) {
-  final list = set
-      .asUint32Iterable()
-      .map((i) => i.toRadixString(2).padLeft(32, '0'))
-      .map(_rev)
-      .expand((s) => [
-            s.substring(0, 16),
-            s.substring(16, 32),
-          ])
-      .toList();
+  final list =
+      set
+          .asUint32Iterable()
+          .map((i) => i.toRadixString(2).padLeft(32, '0'))
+          .map(_rev)
+          .expand((s) => [s.substring(0, 16), s.substring(16, 32)])
+          .toList();
   expect(list, expected);
 }

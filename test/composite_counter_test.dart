@@ -13,19 +13,21 @@ void main() {
     });
 
     test('counter add', () {
-      final counter = CompositeCounter()
-        ..[2] = 100
-        ..[3] = 2
-        ..addCompositeCounter(CompositeCounter()..[2] = 3, shiftLeft: 2)
-        ..addCompositeCounter(CompositeCounter()..[3] = 1);
+      final counter =
+          CompositeCounter()
+            ..[2] = 100
+            ..[3] = 2
+            ..addCompositeCounter(CompositeCounter()..[2] = 3, shiftLeft: 2)
+            ..addCompositeCounter(CompositeCounter()..[3] = 1);
       expect(counter[2], 112);
       expect(counter[3], 3);
     });
 
     test('multiplyWithCounter', () {
-      final c1 = CompositeCounter()
-        ..[2] = 2
-        ..[1000000] = 17;
+      final c1 =
+          CompositeCounter()
+            ..[2] = 2
+            ..[1000000] = 17;
       final c3 = c1 * 5;
       expect(c3.chunks.length, 2);
       expect(c3.chunks.last.offset, 983040);
@@ -34,9 +36,10 @@ void main() {
     });
 
     test('multiplyWithCounter', () {
-      final c1 = CompositeCounter()
-        ..[2] = 2
-        ..[1000000] = 17;
+      final c1 =
+          CompositeCounter()
+            ..[2] = 2
+            ..[1000000] = 17;
       final c2 = CompositeCounter()..[1000000] = 13;
       final c3 = c1 * c2;
       expect(c3.chunks.length, 1);

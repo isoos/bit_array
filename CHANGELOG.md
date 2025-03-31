@@ -1,3 +1,7 @@
+## 2.3.0
+
+- Updated SDK constraint, lints and format.
+
 ## 2.2.1
 
 - Updated and fixed lints.

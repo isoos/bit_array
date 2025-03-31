@@ -117,7 +117,7 @@ class BitCounter {
     for (var i = _bits.length; i < shiftLeft; i++) {
       _bits.add(BitArray(_length));
     }
-    for (var pos = shiftLeft;; pos++) {
+    for (var pos = shiftLeft; ; pos++) {
       BitArray counter;
       if (_bits.length == pos) {
         counter = BitArray(_length);
@@ -233,7 +233,8 @@ class BitCounter {
   void max(BitCounter other) {
     if (_length != other._length) {
       throw ArgumentError(
-          'Length does not match: $_length != ${other._length}');
+        'Length does not match: $_length != ${other._length}',
+      );
     }
     if (bitLength == 0) {
       _bits.addAll(other._bits.map((a) => a.clone()));
@@ -269,7 +270,8 @@ class BitCounter {
   void min(BitCounter other) {
     if (_length != other._length) {
       throw ArgumentError(
-          'Length does not match: $_length != ${other._length}');
+        'Length does not match: $_length != ${other._length}',
+      );
     }
     if (bitLength == 0) {
       return;

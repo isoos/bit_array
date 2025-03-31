@@ -39,24 +39,28 @@ void main() {
     });
 
     test('and', () {
-      final set1 = CompositeSet()
-        ..[1] = true
-        ..[65537] = true;
-      final set2 = CompositeSet()
-        ..[1] = true
-        ..[2] = true;
+      final set1 =
+          CompositeSet()
+            ..[1] = true
+            ..[65537] = true;
+      final set2 =
+          CompositeSet()
+            ..[1] = true
+            ..[2] = true;
 
       set1.and(set2);
       expect(set1.asIntIterable().toList(), [1]);
     });
 
     test('or', () {
-      final set1 = CompositeSet()
-        ..[1] = true
-        ..[65537] = true;
-      final set2 = CompositeSet()
-        ..[1] = true
-        ..[2] = true;
+      final set1 =
+          CompositeSet()
+            ..[1] = true
+            ..[65537] = true;
+      final set2 =
+          CompositeSet()
+            ..[1] = true
+            ..[2] = true;
 
       set1.or(set2);
       expect(set1.asIntIterable().toList(), [1, 2, 65537]);

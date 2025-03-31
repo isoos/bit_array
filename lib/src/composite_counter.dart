@@ -27,10 +27,10 @@ class CompositeCounter {
   final int _offsetMask;
 
   CompositeCounter({this.chunkBits = 16, List<BitCounterChunk>? chunks})
-      : _chunkLength = (1 << chunkBits),
-        _indexMask = (1 << chunkBits) - 1,
-        _offsetMask = ~((1 << chunkBits) - 1),
-        chunks = chunks ?? <BitCounterChunk>[];
+    : _chunkLength = (1 << chunkBits),
+      _indexMask = (1 << chunkBits) - 1,
+      _offsetMask = ~((1 << chunkBits) - 1),
+      chunks = chunks ?? <BitCounterChunk>[];
 
   /// The maximum number of bits required to store the value of the counter.
   int get bitLength =>
@@ -86,9 +86,10 @@ class CompositeCounter {
   CompositeCounter multiply(int value) {
     return CompositeCounter(
       chunkBits: chunkBits,
-      chunks: chunks
-          .map((c) => BitCounterChunk(c.offset, c.bitCounter * value))
-          .toList(),
+      chunks:
+          chunks
+              .map((c) => BitCounterChunk(c.offset, c.bitCounter * value))
+              .toList(),
     );
   }
 
@@ -96,7 +97,8 @@ class CompositeCounter {
   CompositeCounter multiplyWithCounter(CompositeCounter counter) {
     if (counter.chunkBits != chunkBits) {
       throw StateError(
-          'Only counters with the same chunkBits can be multiplied');
+        'Only counters with the same chunkBits can be multiplied',
+      );
     }
     final result = CompositeCounter(chunkBits: counter.chunkBits);
     for (var bcc in counter.chunks) {
@@ -150,12 +152,14 @@ class CompositeCounter {
   /// current [CompositeCounter()] has a value larger or equal to [minValue].
   CompositeSet toMask({int minValue = 1}) {
     return CompositeSet(
-        chunkBits: chunkBits,
-        chunks: chunks.expand<BitSetChunk>((c) {
-          final set = c.bitCounter.toMask(minValue: minValue);
-          if (set.isEmpty) return [];
-          return [BitSetChunk(c.offset, set)];
-        }).toList());
+      chunkBits: chunkBits,
+      chunks:
+          chunks.expand<BitSetChunk>((c) {
+            final set = c.bitCounter.toMask(minValue: minValue);
+            if (set.isEmpty) return [];
+            return [BitSetChunk(c.offset, set)];
+          }).toList(),
+    );
   }
 
   /// Updates the values to the maximum of the pairwise values with [other].
@@ -228,10 +232,15 @@ class CompositeCounter {
   CompositeCounter clone({int shiftRight = 0}) {
     return CompositeCounter(
       chunkBits: chunkBits,
-      chunks: chunks
-          .map((c) => BitCounterChunk(
-              c.offset, c.bitCounter.clone(shiftRight: shiftRight)))
-          .toList(),
+      chunks:
+          chunks
+              .map(
+                (c) => BitCounterChunk(
+                  c.offset,
+                  c.bitCounter.clone(shiftRight: shiftRight),
+                ),
+              )
+              .toList(),
     );
   }
 

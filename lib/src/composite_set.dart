@@ -42,10 +42,10 @@ class CompositeSet extends BitSet {
   final int _offsetMask;
 
   CompositeSet({this.chunkBits = 16, List<BitSetChunk>? chunks})
-      : _chunkLength = (1 << chunkBits),
-        _indexMask = (1 << chunkBits) - 1,
-        _offsetMask = ~((1 << chunkBits) - 1),
-        chunks = chunks ?? <BitSetChunk>[];
+    : _chunkLength = (1 << chunkBits),
+      _indexMask = (1 << chunkBits) - 1,
+      _offsetMask = ~((1 << chunkBits) - 1),
+      chunks = chunks ?? <BitSetChunk>[];
 
   @override
   bool operator [](int index) {
@@ -153,9 +153,10 @@ class CompositeSet extends BitSet {
   CompositeSet clone() {
     return CompositeSet(
       chunkBits: chunkBits,
-      chunks: chunks
-          .map((bsc) => BitSetChunk(bsc.offset, bsc.bitSet.clone()))
-          .toList(),
+      chunks:
+          chunks
+              .map((bsc) => BitSetChunk(bsc.offset, bsc.bitSet.clone()))
+              .toList(),
     );
   }
 

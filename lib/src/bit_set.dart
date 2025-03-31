@@ -48,7 +48,9 @@ abstract class BitSet {
   @override
   int get hashCode =>
       asUint32Iterable().fold(
-          0, (int previousValue, element) => previousValue ^ element.hashCode) ^
+        0,
+        (int previousValue, element) => previousValue ^ element.hashCode,
+      ) ^
       length.hashCode;
 }
 
