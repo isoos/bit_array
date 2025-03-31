@@ -2,6 +2,8 @@
 
 - Updated SDK constraint, lints and format.
 - `BitArray.setWhere` and `BitArray.clearWhere` for callback-driven updates.
+- More efficient `BitArray` operations: `setAll`, `clearAll`.
+- More efficient `BitArray` operations: `and`, `andNot`, `or`, `xor` when the parameter is another `BitArray`.
 
 ## 2.2.1
 

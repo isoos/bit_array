@@ -145,9 +145,7 @@ class BitArray extends BitSet {
 
   /// Sets all of the bits in the current [BitArray] to false.
   void clearAll() {
-    for (var i = 0; i < _data.length; i++) {
-      _data[i] = 0;
-    }
+    _data.fillRange(0, _data.length, 0);
   }
 
   /// Sets the bit specified by the [index] to true.
@@ -184,9 +182,7 @@ class BitArray extends BitSet {
 
   /// Sets all the bit values in the current [BitArray] to true.
   void setAll() {
-    for (var i = 0; i < _data.length; i++) {
-      _data[i] = -1;
-    }
+    _data.fillRange(0, _data.length, -1);
   }
 
   /// Inverts the bit specified by the [index].
@@ -210,11 +206,20 @@ class BitArray extends BitSet {
   /// corresponding elements in the specified [set].
   /// Excess size of the [set] is ignored.
   void and(BitSet set) {
-    final iter = set.asUint32Iterable().iterator;
     var i = 0;
-    for (; i < _data.length && iter.moveNext(); i++) {
-      _data[i] &= iter.current;
+    // Special-case for efficient merging of two arrays.
+    if (set is BitArray) {
+      final minLength = math.min(_data.length, set._data.length);
+      for (; i < minLength; i++) {
+        _data[i] &= set._data[i];
+      }
+    } else {
+      final iter = set.asUint32Iterable().iterator;
+      for (; i < _data.length && iter.moveNext(); i++) {
+        _data[i] &= iter.current;
+      }
     }
+
     for (; i < _data.length; i++) {
       _data[i] = 0;
     }
@@ -224,9 +229,17 @@ class BitArray extends BitSet {
   /// corresponding elements in the specified [set].
   /// Excess size of the [set] is ignored.
   void andNot(BitSet set) {
-    final iter = set.asUint32Iterable().iterator;
-    for (var i = 0; i < _data.length && iter.moveNext(); i++) {
-      _data[i] &= ~iter.current;
+    // Special-case for efficient merging of two arrays.
+    if (set is BitArray) {
+      final minLength = math.min(_data.length, set._data.length);
+      for (var i = 0; i < minLength; i++) {
+        _data[i] &= ~set._data[i];
+      }
+    } else {
+      final iter = set.asUint32Iterable().iterator;
+      for (var i = 0; i < _data.length && iter.moveNext(); i++) {
+        _data[i] &= ~iter.current;
+      }
     }
   }
 
@@ -234,9 +247,17 @@ class BitArray extends BitSet {
   /// corresponding elements in the specified [set].
   /// Excess size of the [set] is ignored.
   void or(BitSet set) {
-    final iter = set.asUint32Iterable().iterator;
-    for (var i = 0; i < _data.length && iter.moveNext(); i++) {
-      _data[i] |= iter.current;
+    // Special-case for efficient merging of two arrays.
+    if (set is BitArray) {
+      final minLength = math.min(_data.length, set._data.length);
+      for (var i = 0; i < minLength; i++) {
+        _data[i] |= set._data[i];
+      }
+    } else {
+      final iter = set.asUint32Iterable().iterator;
+      for (var i = 0; i < _data.length && iter.moveNext(); i++) {
+        _data[i] |= iter.current;
+      }
     }
   }
 
@@ -244,9 +265,17 @@ class BitArray extends BitSet {
   /// corresponding elements in the specified [set].
   /// Excess size of the [set] is ignored.
   void xor(BitSet set) {
-    final iter = set.asUint32Iterable().iterator;
-    for (var i = 0; i < _data.length && iter.moveNext(); i++) {
-      _data[i] = _data[i] ^ iter.current;
+    // Special-case for efficient merging of two arrays.
+    if (set is BitArray) {
+      final minLength = math.min(_data.length, set._data.length);
+      for (var i = 0; i < minLength; i++) {
+        _data[i] = _data[i] ^ set._data[i];
+      }
+    } else {
+      final iter = set.asUint32Iterable().iterator;
+      for (var i = 0; i < _data.length && iter.moveNext(); i++) {
+        _data[i] = _data[i] ^ iter.current;
+      }
     }
   }
 
