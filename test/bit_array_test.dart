@@ -188,6 +188,45 @@ void main() {
         }
       }
     });
+
+    test('clearRange', () {
+      for (var start = 0; start < 128; start++) {
+        for (var end = start; end <= 128; end++) {
+          final array = BitArray(128);
+          array.clearRange(start, end);
+          expect(array.cardinality, 0);
+          array.setAll();
+          array.clearRange(start, end);
+          for (var i = 0; i < 128; i++) {
+            expect(
+              array[i],
+              i < start || i >= end,
+              reason: '$start-$end $i ${array[i]}',
+            );
+          }
+        }
+      }
+    });
+
+    test('setRange', () {
+      for (var start = 0; start < 128; start++) {
+        for (var end = start; end <= 128; end++) {
+          final array = BitArray(128);
+          array.setAll();
+          array.setRange(start, end);
+          expect(array.cardinality, 128);
+          array.clearAll();
+          array.setRange(start, end);
+          for (var i = 0; i < 128; i++) {
+            expect(
+              array[i],
+              i >= start && i < end,
+              reason: '$start-$end $i ${array[i]}',
+            );
+          }
+        }
+      }
+    });
   });
 
   group('BitArray equals and hashCode', () {

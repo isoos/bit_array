@@ -143,6 +143,35 @@ class BitArray extends BitSet {
     }
   }
 
+  /// Sets the bits from [start] (inclusive) up to [end] (exclusive) to false.
+  void clearRange(int start, int end) {
+    assert(start >= 0 && start < _length);
+    assert(start <= end && end <= _length);
+    if (start == end) return;
+    final dataStart = start >> 5;
+    final dataEnd = (end - 1) >> 5;
+    final maskStart = start & 0x1f;
+    final maskEnd = (end - 1) & 0x1f;
+
+    if (dataStart == dataEnd) {
+      for (var i = maskStart; i <= maskEnd; i++) {
+        _data[dataStart] &= _clearMask[i];
+      }
+      return;
+    }
+    if (maskStart == 0) {
+      _data[dataStart] = 0;
+    } else {
+      for (var i = maskStart; i < _clearMask.length; i++) {
+        _data[dataStart] &= _clearMask[i];
+      }
+    }
+    _data.fillRange(dataStart + 1, dataEnd, 0);
+    for (var i = 0; i <= maskEnd; i++) {
+      _data[dataEnd] &= _clearMask[i];
+    }
+  }
+
   /// Sets all of the bits in the current [BitArray] to false.
   void clearAll() {
     _data.fillRange(0, _data.length, 0);
@@ -177,6 +206,35 @@ class BitArray extends BitSet {
         index++;
       }
       _data[i] = d;
+    }
+  }
+
+  /// Sets the bits from [start] (inclusive) up to [end] (exclusive) to false.
+  void setRange(int start, int end) {
+    assert(start >= 0 && start < _length);
+    assert(start <= end && end <= _length);
+    if (start == end) return;
+    final dataStart = start >> 5;
+    final dataEnd = (end - 1) >> 5;
+    final maskStart = start & 0x1f;
+    final maskEnd = (end - 1) & 0x1f;
+
+    if (dataStart == dataEnd) {
+      for (var i = maskStart; i <= maskEnd; i++) {
+        _data[dataStart] |= _bitMask[i];
+      }
+      return;
+    }
+    if (maskStart == 0) {
+      _data[dataStart] = -1;
+    } else {
+      for (var i = maskStart; i < _bitMask.length; i++) {
+        _data[dataStart] |= _bitMask[i];
+      }
+    }
+    _data.fillRange(dataStart + 1, dataEnd, -1);
+    for (var i = 0; i <= maskEnd; i++) {
+      _data[dataEnd] |= _bitMask[i];
     }
   }
 
