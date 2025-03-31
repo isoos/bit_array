@@ -1,6 +1,7 @@
 ## 2.3.0
 
 - Updated SDK constraint, lints and format.
+- `BitArray.setWhere` and `BitArray.clearWhere` for callback-driven updates.
 
 ## 2.2.1
 

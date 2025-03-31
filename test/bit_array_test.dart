@@ -135,6 +135,59 @@ void main() {
       expect((oioi ^ oooo).toBinaryString().substring(0, 4), '0101');
       expect((oioi ^ ioio).toBinaryString().substring(0, 4), '1111');
     });
+
+    test('setWhere calling one', () {
+      for (var i = 0; i < 128; i++) {
+        final array = BitArray(128);
+        array.setAll();
+        array.clearBit(i);
+        final called = [];
+        array.setWhere((i) {
+          called.add(i);
+          return false;
+        });
+        expect(called, [i]);
+        for (var j = 0; j < 128; j++) {
+          expect(array[j], j != i);
+        }
+
+        called.clear();
+        array.setWhere((i) {
+          called.add(i);
+          return true;
+        });
+        expect(called, [i]);
+        for (var j = 0; j < 128; j++) {
+          expect(array[j], true);
+        }
+      }
+    });
+
+    test('clearWhere calling one', () {
+      for (var i = 0; i < 128; i++) {
+        final array = BitArray(128);
+        array.setBit(i);
+        final called = [];
+        array.clearWhere((i) {
+          called.add(i);
+          return false;
+        });
+        expect(called, [i]);
+        for (var j = 0; j < 128; j++) {
+          expect(array[j], j == i);
+        }
+
+        called.clear();
+        array.clearWhere((i) {
+          called.add(i);
+          return true;
+        });
+        expect(called, [i]);
+        for (var j = 0; j < 128; j++) {
+          expect(array[j], false);
+        }
+      }
+    });
   });
 
   group('BitArray equals and hashCode', () {

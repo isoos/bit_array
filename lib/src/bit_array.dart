@@ -121,6 +121,28 @@ class BitArray extends BitSet {
     indexes.forEach(clearBit);
   }
 
+  /// Sets the bits where the [fn] returns true, to false.
+  ///
+  /// Calls [fn] only for index values where the bit is true.
+  void clearWhere(bool Function(int index) fn) {
+    var index = 0;
+    for (var i = 0; i < _data.length; i++) {
+      var d = _data[i];
+      if (d == 0) {
+        index += 32;
+        continue;
+      }
+      for (var j = 0; j < _bitMask.length; j++) {
+        final bm = _bitMask[j];
+        if ((d & bm) != 0 && fn(index)) {
+          d = d & _clearMask[j];
+        }
+        index++;
+      }
+      _data[i] = d;
+    }
+  }
+
   /// Sets all of the bits in the current [BitArray] to false.
   void clearAll() {
     for (var i = 0; i < _data.length; i++) {
@@ -136,6 +158,28 @@ class BitArray extends BitSet {
   /// Sets the bits specified by the [indexes] to true.
   void setBits(Iterable<int> indexes) {
     indexes.forEach(setBit);
+  }
+
+  /// Sets the bits where the [fn] returns true, to true.
+  ///
+  /// Calls [fn] only for index values where the bit is false.
+  void setWhere(bool Function(int index) fn) {
+    var index = 0;
+    for (var i = 0; i < _data.length; i++) {
+      var d = _data[i];
+      if (d == -1) {
+        index += 32;
+        continue;
+      }
+      for (var j = 0; j < _bitMask.length; j++) {
+        final bm = _bitMask[j];
+        if ((d & bm) == 0 && fn(index)) {
+          d = d | bm;
+        }
+        index++;
+      }
+      _data[i] = d;
+    }
   }
 
   /// Sets all the bit values in the current [BitArray] to true.
