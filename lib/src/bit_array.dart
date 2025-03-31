@@ -154,21 +154,20 @@ class BitArray extends BitSet {
     final maskEnd = (end - 1) & 0x1f;
 
     if (dataStart == dataEnd) {
-      for (var i = maskStart; i <= maskEnd; i++) {
-        _data[dataStart] &= _clearMask[i];
-      }
+      _data[dataStart] &=
+          _accClearMaskSkipped[maskStart] ^ _accClearMaskTaken[maskEnd];
       return;
     }
     if (maskStart == 0) {
       _data[dataStart] = 0;
     } else {
-      for (var i = maskStart; i < _clearMask.length; i++) {
-        _data[dataStart] &= _clearMask[i];
-      }
+      _data[dataStart] &= _accClearMaskSkipped[maskStart];
     }
     _data.fillRange(dataStart + 1, dataEnd, 0);
-    for (var i = 0; i <= maskEnd; i++) {
-      _data[dataEnd] &= _clearMask[i];
+    if (maskEnd == 31) {
+      _data[dataEnd] = 0;
+    } else {
+      _data[dataEnd] &= _accClearMaskTaken[maskEnd];
     }
   }
 
@@ -220,21 +219,20 @@ class BitArray extends BitSet {
     final maskEnd = (end - 1) & 0x1f;
 
     if (dataStart == dataEnd) {
-      for (var i = maskStart; i <= maskEnd; i++) {
-        _data[dataStart] |= _bitMask[i];
-      }
+      _data[dataStart] |=
+          _accBitMaskSkipped[maskStart] & _accBitMaskTaken[maskEnd];
       return;
     }
     if (maskStart == 0) {
       _data[dataStart] = -1;
     } else {
-      for (var i = maskStart; i < _bitMask.length; i++) {
-        _data[dataStart] |= _bitMask[i];
-      }
+      _data[dataStart] |= _accBitMaskSkipped[maskStart];
     }
     _data.fillRange(dataStart + 1, dataEnd, -1);
-    for (var i = 0; i <= maskEnd; i++) {
-      _data[dataEnd] |= _bitMask[i];
+    if (maskEnd == 31) {
+      _data[dataEnd] = -1;
+    } else {
+      _data[dataEnd] |= _accBitMaskTaken[maskEnd];
     }
   }
 
@@ -392,7 +390,24 @@ class BitArray extends BitSet {
 }
 
 final _bitMask = List<int>.generate(32, (i) => 1 << i);
+final _accBitMaskTaken = List<int>.generate(
+  32,
+  (i) => _bitMask.take(i + 1).fold(0, (a, b) => a | b),
+);
+final _accBitMaskSkipped = List<int>.generate(
+  32,
+  (i) => _bitMask.skip(i).fold(0, (a, b) => a | b),
+);
 final _clearMask = List<int>.generate(32, (i) => ~(1 << i));
+final _accClearMaskSkipped = List<int>.generate(
+  32,
+  (i) => _clearMask.skip(i).fold(-1, (a, b) => a & b),
+);
+final _accClearMaskTaken = List<int>.generate(
+  32,
+  (i) => _clearMask.take(i + 1).fold(-1, (a, b) => a & b),
+);
+
 final _cardinalityBitCounts = List<int>.generate(256, _cardinalityOfByte);
 
 int _cardinalityOfByte(int value) {
